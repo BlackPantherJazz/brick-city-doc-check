@@ -3,10 +3,31 @@
 import { READ_PROMPT, explainPrompt } from './prompts.js';
 
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+// If the main model is overloaded (503) or rate-limited (429), try this lighter free one.
+const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || 'gemini-3.5-flash-lite';
+const BUSY = new Set([429, 500, 503]);
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const URL_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
+// Try: main model -> same model again after 1.5s -> lighter fallback model.
 async function generate(parts) {
-  const res = await fetch(`${URL_BASE}/${GEMINI_MODEL}:generateContent`, {
+  const attempts = [GEMINI_MODEL, GEMINI_MODEL, FALLBACK_MODEL];
+  let lastErr;
+  for (let i = 0; i < attempts.length; i++) {
+    try {
+      return await generateOnce(attempts[i], parts);
+    } catch (err) {
+      lastErr = err;
+      if (!BUSY.has(err.status)) throw err; // bad key, bad request: retrying won't help
+      console.warn(`Gemini busy (${err.status}) on ${attempts[i]}, attempt ${i + 1}/${attempts.length}`);
+      if (i === 0) await wait(1500);
+    }
+  }
+  throw lastErr;
+}
+
+async function generateOnce(model, parts) {
+  const res = await fetch(`${URL_BASE}/${model}:generateContent`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
     body: JSON.stringify({
