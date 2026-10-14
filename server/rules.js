@@ -105,7 +105,7 @@ function result(status, verdictKey, extra = {}) {
     status, // 'escalate' | 'info' | 'verdict' | 'needs_info'
     verdictKey,
     color: v ? v.color : null,
-    headline: v ? { en: v.en, es: v.es, pt: v.pt } : null,
+    headline: v ? Object.fromEntries(Object.entries(v).filter(([k]) => k !== 'color')) : null, // every language in rules.json
     percent: extra.percent ?? null,
     reasons: extra.reasons ?? [],
     checklist: extra.checklist ?? [],

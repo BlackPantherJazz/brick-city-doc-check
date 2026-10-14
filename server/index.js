@@ -20,7 +20,7 @@ const upload = multer({
     cb(null, ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.mimetype)),
 });
 
-const LANGS = ['en', 'es', 'pt'];
+const LANGS = ['en', 'es', 'pt', 'ht'];
 
 // Basic info the front end needs: mock mode? rules verified? where to get help?
 app.get('/api/info', (_req, res) => {

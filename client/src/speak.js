@@ -1,6 +1,8 @@
 // Read-aloud with the browser's built-in voices. Quality varies by phone —
 // test on the demo phone (plan: 2:30 PM check).
-const LOCALES = { en: 'en-US', es: 'es-US', pt: 'pt-BR' };
+const LOCALES = { en: 'en-US', es: 'es-US', pt: 'pt-BR', ht: 'ht-HT' };
+// If the phone has no voice for a language, borrow a close one.
+const FALLBACK_VOICE = { ht: 'fr' };
 
 export const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
@@ -11,8 +13,13 @@ export function speak(text, lang, onEnd) {
   u.lang = LOCALES[lang] || 'en-US';
   const voices = window.speechSynthesis.getVoices();
   const voice =
-    voices.find((v) => v.lang === u.lang) || voices.find((v) => v.lang.toLowerCase().startsWith(lang));
-  if (voice) u.voice = voice;
+    voices.find((v) => v.lang === u.lang) ||
+    voices.find((v) => v.lang.toLowerCase().startsWith(lang)) ||
+    (FALLBACK_VOICE[lang] && voices.find((v) => v.lang.toLowerCase().startsWith(FALLBACK_VOICE[lang])));
+  if (voice) {
+    u.voice = voice;
+    u.lang = voice.lang;
+  }
   u.rate = 0.95;
   u.onend = onEnd;
   u.onerror = onEnd;

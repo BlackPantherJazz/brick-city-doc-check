@@ -84,10 +84,19 @@ const EXPLAIN = {
   },
 };
 
+// Haitian Creole (Kreyòl ayisyen)
+EXPLAIN.escalate.ht = (f) => `Papye sa a ka konsène tribinal oswa degèpisman. Pa inyore l.${f.deadline_to_respond ? ` Li ka gen yon dat limit: ${f.deadline_to_respond}.` : ''} Rele èd legal gratis jodi a epi pote papye sa a avè w.`;
+EXPLAIN.over_unconscionable.ht = () => 'Mèt kay ou vle ogmante lwaye w plis pase 5% nan yon ane. Newark ka bay mèt kay amann pou ogmantasyon gwo konsa. Ou ka voye lèt ki anba a epi mande èd legal gratis.';
+EXPLAIN.over_cap.ht = () => 'Lwaye w ap monte ant 4% ak 5%. Nan bilding ki gen 3 apatman oswa plis, limit la ka pi ba. Voye lèt la pou mande kijan yo kalkile ogmantasyon an.';
+EXPLAIN.short_notice.ht = () => 'Kantite a sanble bon. Men nouvo lwaye a kòmanse twò vit apre avi a. Mande mèt kay ou ba ou tout tan avi a.';
+EXPLAIN.within_limits.ht = () => 'Lwaye w ap monte yon ti kras. Sa sanble nan limit la. Kanmenm, mande mèt kay ou nimewo enskripsyon vil la pou apatman an.';
+EXPLAIN.not_rent_increase.ht = () => 'Avi sa a pa konsène yon ogmantasyon lwaye. Li l byen epi verifye tout dat ki ladan l.';
+
 const DISCLAIMER = {
   en: 'This is general information, not legal advice.',
   es: 'Esto es información general, no consejo legal.',
   pt: 'Isto é informação geral, não aconselhamento jurídico.',
+  ht: 'Sa a se enfòmasyon jeneral, se pa konsèy legal.',
 };
 
 const blank = (v) => (v === null || v === undefined || v === '' ? '__________' : v);

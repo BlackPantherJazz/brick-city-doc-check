@@ -44,37 +44,43 @@
       "color": "red",
       "en": "This looks like court or eviction papers. Get free legal help now.",
       "es": "Esto parece un documento de corte o desalojo. Busque ayuda legal gratis ahora.",
-      "pt": "Isto parece um documento de tribunal ou despejo. Procure ajuda jurídica gratuita agora."
+      "pt": "Isto parece um documento de tribunal ou despejo. Procure ajuda jurídica gratuita agora.",
+      "ht": "Sa a sanble papye tribinal oswa degèpisman. Jwenn èd legal gratis kounye a."
     },
     "over_unconscionable": {
       "color": "red",
       "en": "This increase is likely above what Newark allows.",
       "es": "Este aumento probablemente es más alto de lo que Newark permite.",
-      "pt": "Este aumento provavelmente é maior do que Newark permite."
+      "pt": "Este aumento provavelmente é maior do que Newark permite.",
+      "ht": "Ogmantasyon sa a pwobableman pi wo pase sa Newark pèmèt."
     },
     "over_cap": {
       "color": "yellow",
       "en": "This increase may be above the rent control cap, depending on CPI.",
       "es": "Este aumento puede estar por encima del límite de control de renta, según el CPI.",
-      "pt": "Este aumento pode estar acima do limite do controle de aluguel, dependendo do CPI."
+      "pt": "Este aumento pode estar acima do limite do controle de aluguel, dependendo do CPI.",
+      "ht": "Ogmantasyon sa a ka depase limit kontwòl lwaye a, sa depann de CPI a."
     },
     "short_notice": {
       "color": "yellow",
       "en": "The amount looks within limits, but you may not have gotten enough notice.",
       "es": "La cantidad parece dentro del límite, pero tal vez no le avisaron con suficiente tiempo.",
-      "pt": "O valor parece dentro do limite, mas talvez você não recebeu aviso com tempo suficiente."
+      "pt": "O valor parece dentro do limite, mas talvez você não recebeu aviso com tempo suficiente.",
+      "ht": "Kantite a sanble nan limit la, men yo ka pa ba ou ase tan avi."
     },
     "within_limits": {
       "color": "green",
       "en": "This increase looks within limits.",
       "es": "Este aumento parece estar dentro del límite.",
-      "pt": "Este aumento parece estar dentro do limite."
+      "pt": "Este aumento parece estar dentro do limite.",
+      "ht": "Ogmantasyon sa a sanble nan limit la."
     },
     "not_rent_increase": {
       "color": null,
       "en": "This is not a rent increase notice. Here is what it says.",
       "es": "Esto no es un aviso de aumento de renta. Esto es lo que dice.",
-      "pt": "Isto não é um aviso de aumento de aluguel. Veja o que ele diz."
+      "pt": "Isto não é um aviso de aumento de aluguel. Veja o que ele diz.",
+      "ht": "Sa a se pa yon avi ogmantasyon lwaye. Men sa li di."
     }
   }
 }

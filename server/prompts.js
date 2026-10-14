@@ -24,7 +24,7 @@ Return ONLY JSON with these keys. Use null for anything the notice does not say.
 Rules: copy numbers exactly as printed. Never guess a value you cannot
 read; use null and list it in unreadable_parts. Do not give legal opinions.`;
 
-const LANG_NAMES = { en: 'English', es: 'Spanish', pt: 'Portuguese' };
+const LANG_NAMES = { en: 'English', es: 'Spanish', pt: 'Portuguese', ht: 'Haitian Creole (Kreyòl ayisyen)' };
 
 export function explainPrompt({ fields, check, language }) {
   const verdictLine = check.headline ? check.headline[language] : '(no verdict: not a rent increase)';
