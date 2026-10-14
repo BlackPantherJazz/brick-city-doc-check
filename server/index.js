@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 import { checkNotice, RULES } from './rules.js';
-import { readNotice, explain, hasKey, MODEL } from './claude.js';
+import { readNotice, explain, hasKey, MODEL } from './ai.js';
 import { SAMPLES, sampleFromFilename, mockExplain } from './mock.js';
 
 const app = express();

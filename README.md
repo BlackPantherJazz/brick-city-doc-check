@@ -17,7 +17,12 @@ npm test                  # 9 rules tests: all 3 sample notices + edge cases
 
 **Mock mode:** with no `ANTHROPIC_API_KEY`, the server returns sample data instead of calling Claude, so the whole flow still works. If you upload a photo whose filename contains `illegal` or `court`, you get that sample back. The **sample buttons** on the home screen always work, with or without a key, so they double as your **wifi-failure fallback on stage**.
 
-**Real AI:** put your key in `.env` (`ANTHROPIC_API_KEY=sk-ant-...`) and restart. The key comes from console.anthropic.com and is billed separately from a Claude.ai subscription. Never commit `.env`.
+**Real AI:** pick one, put the key in `.env`, and restart. Never commit `.env`.
+
+- **Gemini (free):** get a key at aistudio.google.com → **Get API key**, then set `AI_PROVIDER=gemini` and `GEMINI_API_KEY=...`. Free-tier limits apply. If you hit one you'll get a 429, and the explanation falls back to template text. Google's free tier may use what you send to improve its products, so only send **fake** notices.
+- **Claude (paid):** get a key at console.anthropic.com, which is billed separately from a Claude.ai subscription. Set `AI_PROVIDER=claude` and `ANTHROPIC_API_KEY=sk-ant-...`.
+
+`server/ai.js` picks the provider. `server/gemini.js` and `server/claude.js` send the same two prompts, so the rules, screens, and mock mode don't change.
 
 ## How a request flows
 
