@@ -1,0 +1,29 @@
+{
+  "name": "know-your-notice",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Photo of a landlord's notice -> plain-language verdict and reply letter for Newark tenants.",
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,magenta \"node --watch server/index.js\" \"vite\"",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "node --test server/rules.test.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "dotenv": "^16.4.5",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^6.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

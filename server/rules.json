@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "city": "Newark, NJ",
+    "rulesLastChecked": "NOT YET VERIFIED",
+    "verified": false,
+    "note": "Every number here came from news reports and tenant-info sites, not the ordinance text. Verify against newarknj.gov or the Newark rent control office, then set verified=true and put the date in rulesLastChecked."
+  },
+
+  "rentControl": {
+    "minUnits": 3,
+    "capPercent": 4,
+    "cpiPercent": null,
+    "status": "VERIFY: cap is the lower of 4% or CPI. Put the current CPI figure in cpiPercent once confirmed."
+  },
+
+  "unconscionable": {
+    "overPercent": 5,
+    "status": "VERIFY: 2023 ordinance. Fine is $1,200 (city) or $1,250 (Gothamist) - sources conflict."
+  },
+
+  "noticePeriod": {
+    "minDays": 30,
+    "status": "VERIFY on a state or city source."
+  },
+
+  "registration": {
+    "status": "VERIFY: 2023 ordinance requires landlords to register rental units. Reply letter asks for the registration number."
+  },
+
+  "legalHelp": [
+    {
+      "name": "Newark Office of Tenant Legal Services",
+      "phone": "VERIFY - add number",
+      "verified": false
+    },
+    {
+      "name": "Legal Services of New Jersey (LSNJ Legal Hotline)",
+      "phone": "1-888-576-5529",
+      "url": "https://www.lsnj.org",
+      "verified": false
+    }
+  ],
+
+  "verdicts": {
+    "escalate": {
+      "color": "red",
+      "en": "This looks like court or eviction papers. Get free legal help now.",
+      "es": "Esto parece un documento de corte o desalojo. Busque ayuda legal gratis ahora.",
+      "pt": "Isto parece um documento de tribunal ou despejo. Procure ajuda jurídica gratuita agora."
+    },
+    "over_unconscionable": {
+      "color": "red",
+      "en": "This increase is likely above what Newark allows.",
+      "es": "Este aumento probablemente es más alto de lo que Newark permite.",
+      "pt": "Este aumento provavelmente é maior do que Newark permite."
+    },
+    "over_cap": {
+      "color": "yellow",
+      "en": "This increase may be above the rent control cap, depending on CPI.",
+      "es": "Este aumento puede estar por encima del límite de control de renta, según el CPI.",
+      "pt": "Este aumento pode estar acima do limite do controle de aluguel, dependendo do CPI."
+    },
+    "short_notice": {
+      "color": "yellow",
+      "en": "The amount looks within limits, but you may not have gotten enough notice.",
+      "es": "La cantidad parece dentro del límite, pero tal vez no le avisaron con suficiente tiempo.",
+      "pt": "O valor parece dentro do limite, mas talvez você não recebeu aviso com tempo suficiente."
+    },
+    "within_limits": {
+      "color": "green",
+      "en": "This increase looks within limits.",
+      "es": "Este aumento parece estar dentro del límite.",
+      "pt": "Este aumento parece estar dentro do limite."
+    },
+    "not_rent_increase": {
+      "color": null,
+      "en": "This is not a rent increase notice. Here is what it says.",
+      "es": "Esto no es un aviso de aumento de renta. Esto es lo que dice.",
+      "pt": "Isto não é um aviso de aumento de aluguel. Veja o que ele diz."
+    }
+  }
+}

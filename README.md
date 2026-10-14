@@ -1,0 +1,82 @@
+# Know Your Notice
+
+Take a photo of a landlord's letter and get a plain-language verdict (green / yellow / red), a read-aloud button, and a ready-to-send reply letter, in English, Spanish, or Portuguese. Built for Newark, NJ tenants.
+
+> **The AI reads and explains. Plain code makes the legal call.** Nothing is stored.
+
+## Run it (about 2 minutes)
+
+```bash
+npm install
+cp .env.example .env      # leave the key blank to use mock mode
+npm run dev               # opens on http://localhost:5173
+npm test                  # 9 rules tests: all 3 sample notices + edge cases
+```
+
+**To test on your phone:** connect it to the same wifi as your laptop, then open the `Network:` address that `npm run dev` prints (for example `http://192.168.1.20:5173`).
+
+**Mock mode:** with no `ANTHROPIC_API_KEY`, the server returns sample data instead of calling Claude, so the whole flow still works. If you upload a photo whose filename contains `illegal` or `court`, you get that sample back. The **sample buttons** on the home screen always work, with or without a key, so they double as your **wifi-failure fallback on stage**.
+
+**Real AI:** put your key in `.env` (`ANTHROPIC_API_KEY=sk-ant-...`) and restart. The key comes from console.anthropic.com and is billed separately from a Claude.ai subscription. Never commit `.env`.
+
+## How a request flows
+
+```
+ phone photo
+     │  client/src/image.js shrinks it to a ~300 KB JPEG (also converts iPhone HEIC)
+     ▼
+ POST /api/read ──▶ AI CALL 1 (server/claude.js + READ_PROMPT)  → JSON facts
+     ▼
+ Confirm screen: tenant fixes any misread numbers + answers "how many apartments?"
+     ▼
+ POST /api/explain
+     ├─ server/rules.js  checkNotice()  ← PLAIN CODE decides the color
+     │     └─ needs more facts? → back to Confirm and ask (never guesses)
+     └─ AI CALL 2 (explainPrompt) → explanation in the tenant's language + English letter
+            └─ if the AI fails, falls back to template text so the demo never dead-ends
+     ▼
+ Result screen: big color verdict, Listen button, reasons, checklist, letter, help numbers
+```
+
+The verdict headline always comes from `rules.json` (translated ahead of time), never from the AI, so the AI can't soften or change the legal call.
+
+## File map: who works on what
+
+| File | What it does | Owner |
+|---|---|---|
+| `server/rules.json` | All the numbers (4% cap, 5% line, 30 days), verdict wording in 3 languages, legal-help phone numbers | rules/prompts person |
+| `server/rules.js` | The decision order from the build plan, step by step | rules/prompts person |
+| `server/rules.test.js` | Proves all 3 test notices get the right color | everyone: run `npm test` |
+| `server/prompts.js` | The two prompts, word for word from the plan | rules/prompts person |
+| `server/claude.js` | The two Claude API calls | build |
+| `server/mock.js` | Sample notices, template explanations, and the letter template | build |
+| `server/index.js` | Express routes: `/api/info`, `/api/read`, `/api/explain` | build |
+| `client/src/App.jsx` | Which screen shows (a small state machine) | build |
+| `client/src/screens/*` | Upload, Confirm, and Result screens | build / design |
+| `client/src/i18n.js` | Every on-screen word in EN, ES, and PT | anyone who speaks ES/PT |
+| `client/src/styles.css` | Phone-first look and verdict colors | design |
+| `test-notices/` | 3 fictional notice images for testing (legal, illegal, court) | demo |
+
+## Before the demo: verify checklist
+
+Everything in `server/rules.json` is marked `VERIFY`. The app shows orange **DEV** labels until you fix it.
+
+- [ ] Rent control: 3+ units, lower of 4% or CPI. Find the current CPI and put it in `cpiPercent`
+- [ ] 5% "unconscionable" line (2023 ordinance). Fine amount: $1,200 or $1,250?
+- [ ] 30-day notice period
+- [ ] Rental registration requirement
+- [ ] Phone number for the **Newark Office of Tenant Legal Services** (currently blank)
+- [ ] LSNJ hotline number. Confirm it, then set `"verified": true`
+- [ ] Set `meta.verified: true` and `meta.rulesLastChecked: "2026-10-14"`
+- [ ] Have a native speaker skim the ES/PT text in `i18n.js`, `rules.json`, and `mock.js`
+- [ ] Test the **Listen** button in Spanish on the actual demo phone
+
+## Deploy (Render, free)
+
+1. Push this repo to GitHub.
+2. On render.com, create a **New Web Service** and pick the repo.
+3. Build command: `npm install && npm run build`. Start command: `npm start`.
+4. Under **Environment**, add `ANTHROPIC_API_KEY` (and optionally `CLAUDE_MODEL`).
+5. Open the `.onrender.com` link on the demo phone **over venue wifi** before 4:00.
+
+Note: Render's free tier sleeps after about 15 minutes idle, and the first load can take about 30 seconds. Open the link a minute before you go on stage.
