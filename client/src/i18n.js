@@ -64,6 +64,14 @@ export const T = {
     errorRead: 'We could not read that photo. Try again in good light, flat, with the whole page showing.',
     errorGeneric: 'Something went wrong. Please try again.',
     disclaimer: 'This is general information, not legal advice.',
+    statsTitle: 'Built for Newark',
+    stats: [
+      { n: '76%', l: 'of Newark homes are rented' },
+      { n: '36%', l: 'of residents were born outside the U.S.' },
+      { n: '1 in 10', l: 'residents is 65 or older' },
+      { n: '5,500+', l: 'veterans live in Newark' },
+    ],
+    statsSource: 'Source: U.S. Census Bureau',
   },
   es: {
     tagline: '¿Recibió una carta de su casero? Tome una foto. Le diremos qué significa.',
@@ -121,6 +129,14 @@ export const T = {
     errorRead: 'No pudimos leer la foto. Intente con buena luz, el papel plano y la página completa.',
     errorGeneric: 'Algo salió mal. Intente otra vez.',
     disclaimer: 'Esto es información general, no consejo legal.',
+    statsTitle: 'Hecho para Newark',
+    stats: [
+      { n: '76%', l: 'de los hogares de Newark son alquilados' },
+      { n: '36%', l: 'de los residentes nacieron fuera de EE. UU.' },
+      { n: '1 de cada 10', l: 'residentes tiene 65 años o más' },
+      { n: '5.500+', l: 'veteranos viven en Newark' },
+    ],
+    statsSource: 'Fuente: Oficina del Censo de EE. UU.',
   },
   pt: {
     tagline: 'Recebeu uma carta do senhorio? Tire uma foto. Diremos o que significa.',
@@ -178,6 +194,14 @@ export const T = {
     errorRead: 'Não conseguimos ler a foto. Tente com boa luz, papel reto e a página inteira.',
     errorGeneric: 'Algo deu errado. Tente de novo.',
     disclaimer: 'Isto é informação geral, não aconselhamento jurídico.',
+    statsTitle: 'Feito para Newark',
+    stats: [
+      { n: '76%', l: 'das moradias em Newark são alugadas' },
+      { n: '36%', l: 'dos moradores nasceram fora dos EUA' },
+      { n: '1 em cada 10', l: 'moradores tem 65 anos ou mais' },
+      { n: '5.500+', l: 'veteranos moram em Newark' },
+    ],
+    statsSource: 'Fonte: Censo dos EUA',
   },
   ht: {
     tagline: 'Ou resevwa yon lèt nan men mèt kay ou? Pran yon foto. N ap di w sa li vle di.',
@@ -235,5 +259,13 @@ export const T = {
     errorRead: 'Nou pa t ka li foto a. Eseye ankò ak bon limyè, papye a plat, epi tout paj la parèt.',
     errorGeneric: 'Gen yon bagay ki pa mache. Tanpri eseye ankò.',
     disclaimer: 'Sa a se enfòmasyon jeneral, se pa konsèy legal.',
+    statsTitle: 'Fèt pou Newark',
+    stats: [
+      { n: '76%', l: 'kay nan Newark se kay an lwaye' },
+      { n: '36%', l: 'moun ki rete Newark fèt andeyò Etazini' },
+      { n: '1 sou 10', l: 'moun gen 65 an oswa plis' },
+      { n: '5,500+', l: 'veteran rete Newark' },
+    ],
+    statsSource: 'Sous: Biwo Resansman Etazini',
   },
 };

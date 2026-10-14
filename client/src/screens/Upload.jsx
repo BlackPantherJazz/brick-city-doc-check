@@ -33,6 +33,24 @@ export default function Upload({ t, onPhoto, onSample }) {
           <button onClick={() => onSample('court')}>{t.sampleCourt}</button>
         </div>
       </div>
+
+      {/* Who this is for. Numbers: U.S. Census Bureau QuickFacts, Newark city NJ (2020-2024) */}
+      <section className="stats" aria-labelledby="stats-title">
+        <h2 id="stats-title">{t.statsTitle}</h2>
+        <ul className="stat-grid">
+          {t.stats.map((s) => (
+            <li key={s.l} className="stat">
+              <span className="n">{s.n}</span>
+              <span className="l">{s.l}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="src">
+          <a href="https://www.census.gov/quickfacts/newarkcitynewjersey" target="_blank" rel="noreferrer">
+            {t.statsSource}
+          </a>
+        </p>
+      </section>
     </section>
   );
 }

@@ -204,3 +204,13 @@ fieldset.units legend { font-weight: 700; padding: 0 6px; }
   .langs button { flex: 1 1 0; min-width: 0; }
   .samples .row button { font-size: .82rem; padding: 10px 4px; }
 }
+
+/* "Built for Newark" stats: quiet, text-colored, below the main action */
+.stats { margin-top: 28px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.stats h2 { font-size: .95rem; font-weight: 600; color: var(--muted); margin: 0 0 10px; }
+.stat-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.stat .n { display: block; font-size: 1.45rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; line-height: 1.15; }
+.stat .l { display: block; font-size: .85rem; line-height: 1.35; color: var(--muted); margin-top: 4px; }
+.stats .src { font-size: .75rem; margin: 8px 0 0; }
+.stats .src a { color: var(--muted); text-underline-offset: 2px; }
