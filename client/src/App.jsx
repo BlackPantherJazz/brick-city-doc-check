@@ -38,7 +38,7 @@ export default function App() {
       .then((i) => {
         setInfo(i);
         // Hidden from the screen, but loud in the browser console so the team notices.
-        if (i.mock) console.warn('Know Your Notice: MOCK MODE - no API key on the server. Photos return sample data.');
+        if (i.mock) console.warn('Brick City Doc Check: MOCK MODE - no API key on the server. Photos return sample data.');
       })
       .catch(() => {});
   }, []);
@@ -114,7 +114,7 @@ export default function App() {
     <div className="app">
       <header className="top">
         <button className="brand" onClick={startOver} aria-label="Home">
-          Know Your Notice
+          Brick City Doc Check
         </button>
         <nav className="langs" aria-label="Language">
           {LANGS.map((l) => (

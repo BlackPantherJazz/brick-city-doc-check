@@ -86,5 +86,5 @@ if (existsSync(dist)) {
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
-  console.log(`Know Your Notice API on http://localhost:${port}  ${hasKey() ? `(AI: ${MODEL})` : '(MOCK MODE - no API key)'}`);
+  console.log(`Brick City Doc Check API on http://localhost:${port}  ${hasKey() ? `(AI: ${MODEL})` : '(MOCK MODE - no API key)'}`);
 });

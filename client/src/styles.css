@@ -187,3 +187,11 @@ fieldset.units legend { font-weight: 700; padding: 0 6px; }
 
 /* Disclaimer: on every screen, readable but quiet */
 .not-advice { font-size: .8rem; line-height: 1.4; max-width: 34em; margin: 6px auto 0 !important; }
+
+/* Longer app name: keep header on one line on small phones */
+.brand { white-space: nowrap; }
+@media (max-width: 420px) {
+  .brand { font-size: 1rem; }
+  .langs { gap: 4px; }
+  .langs button { min-width: 42px; padding: 6px 9px; font-size: .85rem; }
+}

@@ -1,4 +1,4 @@
-# Know Your Notice
+# Brick City Doc Check
 
 Take a photo of a landlord's letter and get a plain-language verdict (green / yellow / red), a read-aloud button, and a ready-to-send reply letter, in English, Spanish, or Portuguese. Built for Newark, NJ tenants.
 
