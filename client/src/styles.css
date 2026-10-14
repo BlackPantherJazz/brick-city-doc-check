@@ -184,3 +184,6 @@ fieldset.units legend { font-weight: 700; padding: 0 6px; }
 @media (max-width: 360px) {
   .two { grid-template-columns: 1fr; }
 }
+
+/* Disclaimer: on every screen, readable but quiet */
+.not-advice { font-size: .8rem; line-height: 1.4; max-width: 34em; margin: 6px auto 0 !important; }

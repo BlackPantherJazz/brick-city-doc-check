@@ -169,6 +169,7 @@ export default function App() {
 
       <footer className="foot">
         <p>{t.privacy}</p>
+        <p className="not-advice">{t.notAdvice}</p>
         {/* Shown only once the team marks the rules verified in server/rules.json */}
         {info?.rulesVerified && (
           <p>
