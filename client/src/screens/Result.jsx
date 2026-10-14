@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { speak, stopSpeaking, canSpeak } from '../speak.js';
+import { DEBUG } from '../debug.js';
 
 const ICON = { green: '✓', yellow: '!', red: '✕' };
 
@@ -58,7 +59,7 @@ export default function Result({ t, lang, result, info, onStartOver }) {
       )}
 
       <p className="explain">{explanation}</p>
-      {source === 'fallback' && <p className="dev">{t.fallback}</p>}
+      {source === 'fallback' && <p className="note">{t.fallback}</p>}
 
       {(escalate || check.color === 'red') && <Help t={t} info={info} urgent={escalate} />}
 
@@ -104,7 +105,8 @@ export default function Result({ t, lang, result, info, onStartOver }) {
 }
 
 function Help({ t, info, urgent }) {
-  const orgs = info?.legalHelp ?? [];
+  // Orgs without a real phone number are only shown in ?debug mode.
+  const orgs = (info?.legalHelp ?? []).filter((o) => DEBUG || /\d{3}/.test(o.phone));
   return (
     <div className={`help ${urgent ? 'urgent' : ''}`}>
       <h2>{urgent ? t.helpNow : t.helpTitle}</h2>
@@ -120,7 +122,7 @@ function Help({ t, info, urgent }) {
             ) : (
               <p className="dev">{o.phone}</p>
             )}
-            {!o.verified && <p className="dev">DEV: number not verified</p>}
+            {DEBUG && !o.verified && <p className="dev">DEV: number not verified</p>}
           </div>
         );
       })}

@@ -19,7 +19,7 @@ export default function Upload({ t, onPhoto, onSample }) {
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={picked} />
 
       <button className="big primary" onClick={() => cameraRef.current.click()}>
-        <span aria-hidden="true">📷</span> {t.takePhoto}
+        {t.takePhoto}
       </button>
       <button className="link" onClick={() => fileRef.current.click()}>
         {t.choosePhoto}

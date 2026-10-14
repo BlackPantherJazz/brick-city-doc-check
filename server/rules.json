@@ -5,42 +5,40 @@
     "verified": false,
     "note": "Every number here came from news reports and tenant-info sites, not the ordinance text. Verify against newarknj.gov or the Newark rent control office, then set verified=true and put the date in rulesLastChecked."
   },
-
   "rentControl": {
     "minUnits": 3,
     "capPercent": 4,
     "cpiPercent": null,
     "status": "VERIFY: cap is the lower of 4% or CPI. Put the current CPI figure in cpiPercent once confirmed."
   },
-
   "unconscionable": {
     "overPercent": 5,
     "status": "VERIFY: 2023 ordinance. Fine is $1,200 (city) or $1,250 (Gothamist) - sources conflict."
   },
-
   "noticePeriod": {
     "minDays": 30,
     "status": "VERIFY on a state or city source."
   },
-
   "registration": {
     "status": "VERIFY: 2023 ordinance requires landlords to register rental units. Reply letter asks for the registration number."
   },
-
   "legalHelp": [
-    {
-      "name": "Newark Office of Tenant Legal Services",
-      "phone": "VERIFY - add number",
-      "verified": false
-    },
     {
       "name": "Legal Services of New Jersey (LSNJ Legal Hotline)",
       "phone": "1-888-576-5529",
-      "url": "https://www.lsnj.org",
-      "verified": false
+      "hours": "Mon-Fri 8:00 AM - 5:30 PM",
+      "url": "https://www.lsnj.org/getlegalhelp",
+      "verified": true,
+      "source": "lsnj.org/getlegalhelp, checked 2026-10-14"
+    },
+    {
+      "name": "Newark Office of Tenant Legal Services",
+      "phone": "973-733-4311",
+      "url": "https://www.newarknj.gov/617/Office-of-Tenant-Legal-Services",
+      "verified": false,
+      "source": "Listed on the city's OTLS page as City of Newark contact info (may be the City Hall main line). CALL TO CONFIRM. Serves Newark tenants facing eviction, income at or below 200% of poverty level."
     }
   ],
-
   "verdicts": {
     "escalate": {
       "color": "red",

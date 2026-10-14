@@ -9,6 +9,7 @@ import { T, LANGS } from './i18n.js';
 import { getInfo, readNotice, explainNotice } from './api.js';
 import { prepareImage } from './image.js';
 import { stopSpeaking } from './speak.js';
+import { DEBUG } from './debug.js';
 import Upload from './screens/Upload.jsx';
 import Confirm from './screens/Confirm.jsx';
 import Result from './screens/Result.jsx';
@@ -33,7 +34,13 @@ export default function App() {
   const t = T[lang];
 
   useEffect(() => {
-    getInfo().then(setInfo).catch(() => {});
+    getInfo()
+      .then((i) => {
+        setInfo(i);
+        // Hidden from the screen, but loud in the browser console so the team notices.
+        if (i.mock) console.warn('Know Your Notice: MOCK MODE - no API key on the server. Photos return sample data.');
+      })
+      .catch(() => {});
   }, []);
 
   function changeLang(code) {
@@ -115,6 +122,9 @@ export default function App() {
               key={l.code}
               className={l.code === lang ? 'on' : ''}
               aria-pressed={l.code === lang}
+              aria-label={l.name}
+              title={l.name}
+              lang={l.code}
               onClick={() => changeLang(l.code)}
             >
               {l.label}
@@ -159,11 +169,15 @@ export default function App() {
 
       <footer className="foot">
         <p>{t.privacy}</p>
-        <p>
-          {t.rulesChecked} {info?.rulesLastChecked ?? '—'}
-        </p>
-        {info && !info.rulesVerified && <p className="dev">{t.unverified}</p>}
-        {info?.mock && <p className="dev">DEV: mock mode (no API key)</p>}
+        {/* Shown only once the team marks the rules verified in server/rules.json */}
+        {info?.rulesVerified && (
+          <p>
+            {t.rulesChecked} {info.rulesLastChecked}
+          </p>
+        )}
+        {/* Developer notes: hidden unless you add ?debug to the URL (localhost:5173/?debug) */}
+        {DEBUG && info && !info.rulesVerified && <p className="dev">{t.unverified}</p>}
+        {DEBUG && info && <p className="dev">DEV: {info.mock ? 'mock mode (no API key)' : `AI on (${info.model})`}</p>}
       </footer>
     </div>
   );
