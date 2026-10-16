@@ -5,7 +5,8 @@
 // the photo and explains the result, but THIS file decides the verdict.
 // That way the AI can never "make up" what the law says.
 //
-// It follows the decision order from the build plan, step by step.
+// Rules verified against Newark's Rent Control ordinance (Title XIX, ecode360)
+// on 2026-10-14 except where rules.json says otherwise.
 // ─────────────────────────────────────────────────────────────
 import { readFileSync } from 'node:fs';
 
@@ -29,13 +30,18 @@ function isMissing(n) {
 /**
  * @param {object} fields  JSON pulled from the photo (Prompt 1), after the tenant confirms it
  * @param {object} opts
- * @param {'1-2'|'3+'|'unknown'} opts.units  answer to "How many apartments are in your building?"
+ * @param {'covered'|'exempt'|'unsure'|undefined} opts.coverage  answer to
+ *   "Does your landlord live in your building, and does it have 4 apartments or fewer?"
+ *   yes -> 'exempt' (owner-occupied, not under rent control), no -> 'covered', not sure -> 'unsure'.
+ *   undefined = not asked yet.
  * @returns {{status, verdictKey, color, percent, reasons, checklist, missing}}
  */
-export function checkNotice(fields, { units = 'unknown' } = {}) {
+export function checkNotice(fields, { coverage } = {}) {
   const reasons = [];
   const checklist = [];
   const r = RULES;
+  const cap = r.rentControl.capPercent; // 4
+  const unconscionable = r.unconscionable.overPercent; // 5
 
   // STEP 1 — Court or eviction papers: red, escalate, stop.
   if (fields.notice_type === 'eviction_or_court' || fields.mentions_court_or_filing === true) {
@@ -47,19 +53,19 @@ export function checkNotice(fields, { units = 'unknown' } = {}) {
     return result('info', 'not_rent_increase');
   }
 
-  // STEP 7 (checked early) — never guess missing rents. Ask instead.
+  // STEP 3 — Never guess missing rents. Ask instead.
   const missing = [];
   if (isMissing(fields.current_rent)) missing.push('current_rent');
   if (isMissing(fields.new_rent)) missing.push('new_rent');
   if (missing.length) return result('needs_info', null, { missing });
 
-  // STEP 3 — Compute the increase.
+  // STEP 4 — Compute the increase.
   const current = Number(fields.current_rent);
   const next = Number(fields.new_rent);
   const percent = Math.round(((next - current) / current) * 1000) / 10; // one decimal
   reasons.push(`Rent goes from $${current} to $${next} (${percent}%).`);
 
-  // Notice-period check (used for the checklist and to soften a green).
+  // Checklist items that apply to every rent increase.
   const noticeDays = daysBetween(fields.notice_date, fields.effective_date);
   const minDays = r.noticePeriod.minDays;
   let shortNotice = false;
@@ -67,35 +73,42 @@ export function checkNotice(fields, { units = 'unknown' } = {}) {
     checklist.push({ item: `Check you got at least ${minDays} days' written notice (dates were unclear).`, ok: null });
   } else if (noticeDays < minDays) {
     shortNotice = true;
-    checklist.push({ item: `Only ${noticeDays} days between the notice and the new rent. Newark is reported to require ${minDays}.`, ok: false });
+    checklist.push({ item: `Only ${noticeDays} days between the notice and the new rent. Newark requires at least ${minDays} days' written notice (§ 19:2-3.2).`, ok: false });
   } else {
-    checklist.push({ item: `${noticeDays} days' notice (reported minimum: ${minDays}).`, ok: true });
+    checklist.push({ item: `${noticeDays} days' notice (Newark requires at least ${minDays}).`, ok: true });
   }
-  checklist.push({ item: 'Ask the landlord for the unit\'s city rental registration number.', ok: null });
+  checklist.push({ item: 'Ask for the unit\'s rent registration. Newark does not allow increases on unregistered units (§ 19:2-3.1).', ok: null });
 
-  // STEP 4 — Over 5%: red.
-  if (percent > r.unconscionable.overPercent) {
-    reasons.push(`Over ${r.unconscionable.overPercent}% in one year.`);
+  // STEP 5 — Over 5%: red no matter what kind of building.
+  // Rent-controlled units can't go over 4%; non-controlled units over 5% count as "unconscionable".
+  if (percent > unconscionable) {
+    reasons.push(coverage === 'exempt'
+      ? `Over ${unconscionable}% in one year, which Newark treats as unconscionable for units not under rent control.`
+      : `Over ${unconscionable}% in one year. That is above Newark's ${cap}% rent control cap and its ${unconscionable}% limit for other units.`);
     return result('verdict', 'over_unconscionable', { percent, reasons, checklist });
   }
 
-  // STEP 5 — Over the 4% cap, up to 5%: depends on building size.
-  if (percent > r.rentControl.capPercent) {
-    if (units === 'unknown') {
-      // STEP 7 — building size matters here, so ask.
-      return result('needs_info', null, { percent, reasons, checklist, missing: ['units'] });
+  // STEP 6 — Between 4% and 5%: the answer depends on whether rent control applies.
+  if (percent > cap) {
+    if (coverage === undefined) {
+      // Ask the one follow-up question — never guess.
+      return result('needs_info', null, { percent, reasons, checklist, missing: ['coverage'] });
     }
-    if (units === '3+') {
-      reasons.push(`Buildings with ${r.rentControl.minUnits}+ units are reported to be capped at ${r.rentControl.capPercent}% or CPI, whichever is lower.`);
+    if (coverage === 'covered') {
+      reasons.push(`Newark rent control caps yearly increases at the CPI change, and never more than ${cap}% (§ 19:2-3.1).`);
       return result('verdict', 'over_cap', { percent, reasons, checklist });
     }
-    reasons.push(`Building has fewer than ${r.rentControl.minUnits} units, so the rent control cap is reported not to apply. The increase is still under ${r.unconscionable.overPercent}%.`);
+    if (coverage === 'unsure') {
+      reasons.push(`Under rent control the limit is ${cap}%. Owner-occupied buildings with 4 or fewer units are exempt, and their limit is ${unconscionable}%.`);
+      return result('verdict', 'depends_on_building', { percent, reasons, checklist });
+    }
+    reasons.push(`Owner-occupied buildings with 4 or fewer units are not under rent control. The increase is under the ${unconscionable}% limit.`);
+  } else {
+    // STEP 7 — 4% or under.
+    reasons.push(`Under ${cap}%. If your unit is under rent control, the limit can be lower (the CPI change), so ask how it was calculated.`);
   }
 
-  // STEP 6 — 4% or under (or small building under 5%): green, plus checklist.
-  if (shortNotice) {
-    return result('verdict', 'short_notice', { percent, reasons, checklist });
-  }
+  if (shortNotice) return result('verdict', 'short_notice', { percent, reasons, checklist });
   return result('verdict', 'within_limits', { percent, reasons, checklist });
 }
 

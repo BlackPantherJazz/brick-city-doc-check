@@ -63,9 +63,14 @@ const EXPLAIN = {
     pt: () => 'Seu senhorio quer aumentar o aluguel em mais de 5% em um ano. Newark pode multar senhorios por aumentos tão grandes. Você pode enviar a carta abaixo e pedir ajuda jurídica gratuita.',
   },
   over_cap: {
-    en: () => 'Your rent goes up between 4% and 5%. In buildings with 3 or more apartments, the limit may be lower. Send the letter to ask how the raise was figured.',
-    es: () => 'Su renta sube entre 4% y 5%. En edificios con 3 o más apartamentos, el límite puede ser menor. Envíe la carta para preguntar cómo calcularon el aumento.',
-    pt: () => 'Seu aluguel sobe entre 4% e 5%. Em prédios com 3 ou mais apartamentos, o limite pode ser menor. Envie a carta para perguntar como o aumento foi calculado.',
+    en: () => 'Your rent goes up more than 4%. In Newark, rent control limits yearly increases to the CPI change, and never more than 4%. Send the letter below to ask how the increase was calculated.',
+    es: () => 'Su renta sube más de 4%. En Newark, el control de renta limita los aumentos anuales al cambio del CPI, y nunca más de 4%. Envíe la carta de abajo para preguntar cómo calcularon el aumento.',
+    pt: () => 'Seu aluguel sobe mais de 4%. Em Newark, o controle de aluguel limita os aumentos anuais à variação do CPI, e nunca mais de 4%. Envie a carta abaixo para perguntar como o aumento foi calculado.',
+  },
+  depends_on_building: {
+    en: () => 'Your rent goes up between 4% and 5%. Most Newark rentals are under rent control, with a 4% limit. Buildings with 4 or fewer units where the owner lives are not. Ask your landlord which applies to you.',
+    es: () => 'Su renta sube entre 4% y 5%. La mayoría de los alquileres en Newark tienen control de renta, con un límite de 4%. Los edificios de 4 unidades o menos donde vive el dueño no lo tienen. Pregunte a su casero cuál aplica.',
+    pt: () => 'Seu aluguel sobe entre 4% e 5%. A maioria dos aluguéis em Newark tem controle de aluguel, com limite de 4%. Prédios com 4 unidades ou menos onde o dono mora não têm. Pergunte ao senhorio qual se aplica.',
   },
   short_notice: {
     en: () => 'The amount looks OK. But the new rent starts very soon after the notice. Ask your landlord to give you the full notice time.',
@@ -87,7 +92,8 @@ const EXPLAIN = {
 // Haitian Creole (Kreyòl ayisyen)
 EXPLAIN.escalate.ht = (f) => `Papye sa a ka konsène tribinal oswa degèpisman. Pa inyore l.${f.deadline_to_respond ? ` Li ka gen yon dat limit: ${f.deadline_to_respond}.` : ''} Rele èd legal gratis jodi a epi pote papye sa a avè w.`;
 EXPLAIN.over_unconscionable.ht = () => 'Mèt kay ou vle ogmante lwaye w plis pase 5% nan yon ane. Newark ka bay mèt kay amann pou ogmantasyon gwo konsa. Ou ka voye lèt ki anba a epi mande èd legal gratis.';
-EXPLAIN.over_cap.ht = () => 'Lwaye w ap monte ant 4% ak 5%. Nan bilding ki gen 3 apatman oswa plis, limit la ka pi ba. Voye lèt la pou mande kijan yo kalkile ogmantasyon an.';
+EXPLAIN.over_cap.ht = () => 'Lwaye w ap monte plis pase 4%. Nan Newark, kontwòl lwaye limite ogmantasyon chak ane a chanjman CPI a, epi janm plis pase 4%. Voye lèt ki anba a pou mande kijan yo kalkile ogmantasyon an.';
+EXPLAIN.depends_on_building.ht = () => 'Lwaye w ap monte ant 4% ak 5%. Pifò lwaye nan Newark anba kontwòl lwaye, ak yon limit 4%. Bilding ki gen 4 apatman oswa mwens kote mèt kay la rete pa ladan. Mande mèt kay ou kiyès ki aplike pou ou.';
 EXPLAIN.short_notice.ht = () => 'Kantite a sanble bon. Men nouvo lwaye a kòmanse twò vit apre avi a. Mande mèt kay ou ba ou tout tan avi a.';
 EXPLAIN.within_limits.ht = () => 'Lwaye w ap monte yon ti kras. Sa sanble nan limit la. Kanmenm, mande mèt kay ou nimewo enskripsyon vil la pou apatman an.';
 EXPLAIN.not_rent_increase.ht = () => 'Avi sa a pa konsène yon ogmantasyon lwaye. Li l byen epi verifye tout dat ki ladan l.';

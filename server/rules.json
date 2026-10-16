@@ -1,26 +1,34 @@
 {
   "meta": {
     "city": "Newark, NJ",
-    "rulesLastChecked": "NOT YET VERIFIED",
+    "rulesLastChecked": "Oct 14, 2026",
     "verified": false,
-    "note": "Every number here came from news reports and tenant-info sites, not the ordinance text. Verify against newarknj.gov or the Newark rent control office, then set verified=true and put the date in rulesLastChecked."
+    "note": "Rent control rules checked against the ordinance text (ecode360.com/36623772). The 5% 'unconscionable' rule and the current CPI figure still come from news/secondary sources - see each rule's status."
   },
   "rentControl": {
-    "minUnits": 3,
     "capPercent": 4,
     "cpiPercent": null,
-    "status": "VERIFY: cap is the lower of 4% or CPI. Put the current CPI figure in cpiPercent once confirmed."
+    "coverage": "All rental buildings, except: owner-occupied buildings with 4 or fewer units, new construction, public housing, and certain subsidized units.",
+    "source": "Newark Code § 19:2-2, 19:2-2.1, 19:2-3.1",
+    "verified": true,
+    "status": "Cap = CPI change, never above 4% (verified). Current CPI figure: call the Office of Rent Control."
   },
   "unconscionable": {
     "overPercent": 5,
-    "status": "VERIFY: 2023 ordinance. Fine is $1,200 (city) or $1,250 (Gothamist) - sources conflict."
+    "source": "ROI-NJ / Gothamist / Rutgers CLiME (June 2023)",
+    "verified": false,
+    "status": "Applies to units not under rent control. Fine up to $1,200 per unit (ROI-NJ); Gothamist reported $1,250. Ordinance text not yet found."
   },
   "noticePeriod": {
     "minDays": 30,
-    "status": "VERIFY on a state or city source."
+    "source": "Newark Code § 19:2-3.2",
+    "verified": true,
+    "status": "30 days' written notice to the tenant AND the Rent Regulation Officer, stating the increase, %, prior rent and allowable increase."
   },
   "registration": {
-    "status": "VERIFY: 2023 ordinance requires landlords to register rental units. Reply letter asks for the registration number."
+    "source": "Newark Code § 19:2-3.1, 19:2-3.4",
+    "verified": true,
+    "status": "No increase is allowed if the landlord has not met registration requirements."
   },
   "legalHelp": [
     {
@@ -55,11 +63,18 @@
       "ht": "Ogmantasyon sa a pwobableman pi wo pase sa Newark pèmèt."
     },
     "over_cap": {
+      "color": "red",
+      "en": "This increase is likely above Newark's 4% rent control cap.",
+      "es": "Este aumento probablemente supera el límite de 4% del control de renta de Newark.",
+      "pt": "Este aumento provavelmente passa do limite de 4% do controle de aluguel de Newark.",
+      "ht": "Ogmantasyon sa a pwobableman depase limit 4% kontwòl lwaye Newark la."
+    },
+    "depends_on_building": {
       "color": "yellow",
-      "en": "This increase may be above the rent control cap, depending on CPI.",
-      "es": "Este aumento puede estar por encima del límite de control de renta, según el CPI.",
-      "pt": "Este aumento pode estar acima do limite do controle de aluguel, dependendo do CPI.",
-      "ht": "Ogmantasyon sa a ka depase limit kontwòl lwaye a, sa depann de CPI a."
+      "en": "This increase may be above Newark's limit, depending on your building.",
+      "es": "Este aumento puede superar el límite de Newark, según su edificio.",
+      "pt": "Este aumento pode passar do limite de Newark, dependendo do seu prédio.",
+      "ht": "Ogmantasyon sa a ka depase limit Newark la, sa depann de bilding ou a."
     },
     "short_notice": {
       "color": "yellow",

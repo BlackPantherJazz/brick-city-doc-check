@@ -54,11 +54,12 @@ app.post('/api/read', upload.single('photo'), async (req, res) => {
 
 // STEP B — confirmed fields in, rules check (code) + explanation (AI) out.
 app.post('/api/explain', async (req, res) => {
-  const { fields, units = 'unknown' } = req.body || {};
+  const { fields, coverage } = req.body || {};
+  const COVERAGE = ['covered', 'exempt', 'unsure'];
   const language = LANGS.includes(req.body?.language) ? req.body.language : 'en';
   if (!fields) return res.status(400).json({ error: 'no_fields' });
 
-  const check = checkNotice(fields, { units });
+  const check = checkNotice(fields, { coverage: COVERAGE.includes(coverage) ? coverage : undefined });
 
   // The code needs more facts (missing rent or building size) — ask, never guess.
   if (check.status === 'needs_info') return res.json({ check });
