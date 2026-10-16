@@ -15,12 +15,14 @@ npm test                  # 9 rules tests: all 3 sample notices + edge cases
 
 **To test on your phone:** connect it to the same wifi as your laptop, then open the `Network:` address that `npm run dev` prints (for example `http://192.168.1.20:5173`).
 
-**Mock mode:** with no `ANTHROPIC_API_KEY`, the server returns sample data instead of calling Claude, so the whole flow still works. If you upload a photo whose filename contains `illegal` or `court`, you get that sample back. The **sample buttons** on the home screen always work, with or without a key, so they double as your **wifi-failure fallback on stage**.
+**Mock mode:** with no AI key in `.env` (neither `GEMINI_API_KEY` nor `ANTHROPIC_API_KEY`), the server returns sample data instead of calling an AI, so the whole flow still works. If you upload a photo whose filename contains `illegal` or `court`, you get that sample back. The **sample buttons** on the home screen never call the AI, so they double as your **wifi-failure fallback on stage**.
 
 **Real AI:** pick one, put the key in `.env`, and restart. Never commit `.env`.
 
 - **Gemini (free):** get a key at aistudio.google.com → **Get API key**, then set `AI_PROVIDER=gemini` and `GEMINI_API_KEY=...`. Free-tier limits apply. If you hit one you'll get a 429, and the explanation falls back to template text. Google's free tier may use what you send to improve its products, so only send **fake** notices.
 - **Claude (paid):** get a key at console.anthropic.com, which is billed separately from a Claude.ai subscription. Set `AI_PROVIDER=claude` and `ANTHROPIC_API_KEY=sk-ant-...`.
+
+**Why two providers?** The build plan started on Claude; Gemini was added as the free option for the hackathon. Keeping both makes the AI layer swappable: one line in `.env` switches providers, and the legal rules never change.
 
 `server/ai.js` picks the provider. `server/gemini.js` and `server/claude.js` send the same two prompts, so the rules, screens, and mock mode don't change.
 
@@ -30,7 +32,7 @@ npm test                  # 9 rules tests: all 3 sample notices + edge cases
  phone photo
      │  client/src/image.js shrinks it to a ~300 KB JPEG (also converts iPhone HEIC)
      ▼
- POST /api/read ──▶ AI CALL 1 (server/claude.js + READ_PROMPT)  → JSON facts
+ POST /api/read ──▶ AI CALL 1 (server/ai.js → gemini.js or claude.js, READ_PROMPT) → JSON facts
      ▼
  Confirm screen: tenant fixes any misread numbers + answers "how many apartments?"
      ▼
@@ -53,7 +55,9 @@ The verdict headline always comes from `rules.json` (translated ahead of time), 
 | `server/rules.js` | The decision order from the build plan, step by step | rules/prompts person |
 | `server/rules.test.js` | Proves all 3 test notices get the right color | everyone: run `npm test` |
 | `server/prompts.js` | The two prompts, word for word from the plan | rules/prompts person |
-| `server/claude.js` | The two Claude API calls | build |
+| `server/ai.js` | Picks the AI provider from `AI_PROVIDER` in `.env` (default: Gemini) | build |
+| `server/gemini.js` | The two AI calls via Google Gemini (free tier). Retries when Google is busy, then falls back to a lighter model | build |
+| `server/claude.js` | The same two calls via Anthropic Claude (optional, paid). Unused unless `AI_PROVIDER=claude` | build |
 | `server/mock.js` | Sample notices, template explanations, and the letter template | build |
 | `server/index.js` | Express routes: `/api/info`, `/api/read`, `/api/explain` | build |
 | `client/src/App.jsx` | Which screen shows (a small state machine) | build |
@@ -81,7 +85,7 @@ Everything in `server/rules.json` is marked `VERIFY`. The app shows orange **DEV
 1. Push this repo to GitHub.
 2. On render.com, create a **New Web Service** and pick the repo.
 3. Build command: `npm install && npm run build`. Start command: `npm start`.
-4. Under **Environment**, add `ANTHROPIC_API_KEY` (and optionally `CLAUDE_MODEL`).
+4. Under **Environment**, add `AI_PROVIDER=gemini` and `GEMINI_API_KEY` (or `AI_PROVIDER=claude` and `ANTHROPIC_API_KEY`).
 5. Open the `.onrender.com` link on the demo phone **over venue wifi** before 4:00.
 
 Note: Render's free tier sleeps after about 15 minutes idle, and the first load can take about 30 seconds. Open the link a minute before you go on stage.

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// MOCK MODE — used when there is no ANTHROPIC_API_KEY, when a "sample"
+// MOCK MODE — used when there is no AI key in .env, when a "sample"
 // button is pressed, or as a fallback if the AI call fails on stage.
 // These are the three fake notices from the build plan.
 // ─────────────────────────────────────────────────────────────

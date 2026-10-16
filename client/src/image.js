@@ -1,6 +1,6 @@
 // Shrinks the phone photo before upload: a 12-megapixel photo becomes a
 // ~300 KB JPEG. Faster on venue wifi, and it also converts iPhone HEIC
-// photos (which Claude can't read) into JPEG.
+// photos (which the AI can't read) into JPEG.
 const MAX_SIDE = 1600;
 
 export async function prepareImage(file) {
