@@ -8,6 +8,7 @@ import path from 'node:path';
 import { checkNotice, RULES } from './rules.js';
 import { readNotice, explain, hasKey, MODEL } from './ai.js';
 import { SAMPLES, sampleFromFilename, mockExplain } from './mock.js';
+import { cleanLocations } from './boxes.js';
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
@@ -44,6 +45,7 @@ app.post('/api/read', upload.single('photo'), async (req, res) => {
     if (!hasKey()) return res.json({ fields: sampleFromFilename(req.file.originalname), source: 'mock' });
 
     const fields = await readNotice(req.file.buffer, req.file.mimetype);
+    fields.locations = cleanLocations(fields.locations); // keep only well-formed boxes
     res.json({ fields, source: 'ai' });
   } catch (err) {
     // Log the error type only — never the notice contents.
@@ -59,22 +61,24 @@ app.post('/api/explain', async (req, res) => {
   const language = LANGS.includes(req.body?.language) ? req.body.language : 'en';
   if (!fields) return res.status(400).json({ error: 'no_fields' });
 
-  const check = checkNotice(fields, { coverage: COVERAGE.includes(coverage) ? coverage : undefined });
+  // Box positions are for the screen only; the rules and the explainer get just the facts.
+  const { locations, ...facts } = fields;
+  const check = checkNotice(facts, { coverage: COVERAGE.includes(coverage) ? coverage : undefined });
 
   // The code needs more facts (missing rent or building size) — ask, never guess.
   if (check.status === 'needs_info') return res.json({ check });
 
-  if (!hasKey()) return res.json({ check, ...mockExplain({ fields, check, language }), source: 'mock' });
+  if (!hasKey()) return res.json({ check, ...mockExplain({ fields: facts, check, language }), source: 'mock' });
 
   try {
-    const out = await explain({ fields, check, language });
+    const out = await explain({ fields: facts, check, language });
     // The verdict line always comes from code, even if the AI rewords it.
     if (check.headline) out.verdict_line = check.headline[language];
     res.json({ check, ...out, source: 'ai' });
   } catch (err) {
     console.error('explain failed:', err.status || '', err.message);
     // Fallback so the demo never dead-ends: template text, flagged as such.
-    res.json({ check, ...mockExplain({ fields, check, language }), source: 'fallback' });
+    res.json({ check, ...mockExplain({ fields: facts, check, language }), source: 'fallback' });
   }
 });
 

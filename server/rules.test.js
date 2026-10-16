@@ -74,3 +74,23 @@ test('every verdict has all 4 languages', async () => {
   const { RULES } = await import('./rules.js');
   for (const [k, v] of Object.entries(RULES.verdicts)) for (const l of ['en', 'es', 'pt', 'ht']) assert.ok(v[l], `${k}.${l}`);
 });
+
+test('cleanLocations keeps good boxes and drops broken ones', async () => {
+  const { cleanLocations } = await import('./boxes.js');
+  const out = cleanLocations({
+    new_rent: [500, 300, 520, 380], // good
+    current_rent: [520, 300, 500, 380], // ymax < ymin
+    notice_date: [10, 20, 30], // wrong length
+    effective_date: [0, 0, 1200, 50], // off the image
+    landlord_or_company: null,
+    made_up_field: [1, 2, 3, 4], // not a field we show
+  });
+  assert.deepEqual(out, { new_rent: [500, 300, 520, 380] });
+});
+
+test('every sample photo has a box for each fact it shows', async () => {
+  for (const key of ['legal', 'illegal', 'yellow', 'short']) {
+    for (const f of ['current_rent', 'new_rent', 'notice_date', 'effective_date']) assert.ok(SAMPLES[key].locations[f], `${key}.${f}`);
+  }
+  assert.ok(SAMPLES.court.locations.court_mention);
+});

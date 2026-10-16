@@ -18,11 +18,26 @@ Return ONLY JSON with these keys. Use null for anything the notice does not say.
 "deadline_to_respond": "YYYY-MM-DD",
 "mentions_court_or_filing": false,
 "confidence": "high | medium | low",
-"unreadable_parts": []
+"unreadable_parts": [],
+"locations": {
+  "landlord_or_company": [0, 0, 0, 0],
+  "unit_address": [0, 0, 0, 0],
+  "notice_date": [0, 0, 0, 0],
+  "effective_date": [0, 0, 0, 0],
+  "current_rent": [0, 0, 0, 0],
+  "new_rent": [0, 0, 0, 0],
+  "deadline_to_respond": [0, 0, 0, 0],
+  "court_mention": [0, 0, 0, 0]
+}
 }
 
 Rules: copy numbers exactly as printed. Never guess a value you cannot
-read; use null and list it in unreadable_parts. Do not give legal opinions.`;
+read; use null and list it in unreadable_parts. Do not give legal opinions.
+
+For "locations", give the bounding box around the printed text of each value
+you found, as [ymin, xmin, ymax, xmax] scaled 0 to 1000 relative to the image
+(0,0 is the top-left corner). "court_mention" is the words that mention a court,
+complaint, summons or filing. Use null for anything not on the notice.`;
 
 const LANG_NAMES = { en: 'English', es: 'Spanish', pt: 'Portuguese', ht: 'Haitian Creole (Kreyòl ayisyen)' };
 

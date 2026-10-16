@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 // ─────────────────────────────────────────────────────────────
 // MOCK MODE — used when there is no AI key in .env, when a "sample"
 // button is pressed, or as a fallback if the AI call fails on stage.
@@ -6,13 +7,16 @@
 
 const base = {
   language_of_notice: 'English',
-  landlord_or_company: 'Broad Street Property Group LLC',
-  unit_address: '123 Example Ave, Apt 4B, Newark, NJ 07102',
+  landlord_or_company: 'Sample Street Holdings LLC',
+  unit_address: '45 Example Place, Apt 4B, Newark, NJ 07104',
   deadline_to_respond: null,
   mentions_court_or_filing: false,
   confidence: 'high',
   unreadable_parts: [],
 };
+
+// Where each value sits on the sample photos (measured by scripts/make-samples.py).
+const BOXES = JSON.parse(readFileSync(new URL('./sample-boxes.json', import.meta.url), 'utf8'));
 
 export const SAMPLES = {
   legal: {
@@ -33,6 +37,7 @@ export const SAMPLES = {
   },
   court: {
     ...base,
+    unit_address: '45 Example Place, Apt 2B, Newark, NJ 07104',
     notice_type: 'eviction_or_court',
     current_rent: null,
     new_rent: null,
@@ -41,13 +46,34 @@ export const SAMPLES = {
     deadline_to_respond: '2026-10-22',
     mentions_court_or_filing: true,
   },
+  yellow: {
+    ...base,
+    unit_address: '45 Example Place, Apt 3C, Newark, NJ 07104',
+    notice_type: 'rent_increase',
+    current_rent: 1600,
+    new_rent: 1672,
+    notice_date: '2026-10-01',
+    effective_date: '2026-12-01',
+  },
+  short: {
+    ...base,
+    unit_address: '45 Example Place, Apt 1A, Newark, NJ 07104',
+    notice_type: 'rent_increase',
+    current_rent: 1400,
+    new_rent: 1442,
+    notice_date: '2026-10-10',
+    effective_date: '2026-10-24',
+  },
 };
+for (const [key, sample] of Object.entries(SAMPLES)) sample.locations = BOXES[key] ?? {};
 
 /** In mock mode, pick a sample from the uploaded file's name (handy for testing). */
 export function sampleFromFilename(name = '') {
   const n = name.toLowerCase();
   if (n.includes('court') || n.includes('evict')) return SAMPLES.court;
   if (n.includes('illegal')) return SAMPLES.illegal;
+  if (n.includes('yellow')) return SAMPLES.yellow;
+  if (n.includes('short')) return SAMPLES.short;
   return SAMPLES.legal;
 }
 
