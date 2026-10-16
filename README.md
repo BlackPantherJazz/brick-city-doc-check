@@ -4,6 +4,13 @@ Take a photo of a landlord's letter and get a plain-language verdict (green / ye
 
 > **The AI reads and explains. Plain code makes the legal call.** Nothing is stored.
 
+## What's new in v2
+
+- **The AI shows its work.** After reading a photo, highlighter strokes swipe across every fact the AI found: rent, dates, landlord, and court language (pink). Tap a stroke to jump to its field; tap a field to light up where it came from.
+- **A scanner line sweeps the photo while the AI reads it.** No more spinner.
+- **Rent-control rules now match the ordinance.** Rent control covers all Newark rentals except owner-occupied buildings with 4 or fewer units (and a few other exemptions), not just 3+ unit buildings. Increases between 4% and 5% trigger one follow-up question: "Does your landlord live in your building, and does it have 4 apartments or fewer?"
+- **The sample buttons show real photos with highlights** and work with no AI and no internet, so they're stage-proof.
+
 ## Run it (about 2 minutes)
 
 ```bash
@@ -54,6 +61,10 @@ The verdict headline always comes from `rules.json` (translated ahead of time), 
 | `server/rules.json` | All the numbers (4% cap, 5% line, 30 days), verdict wording in 3 languages, legal-help phone numbers | rules/prompts person |
 | `server/rules.js` | The decision order from the build plan, step by step | rules/prompts person |
 | `server/rules.test.js` | Proves all 3 test notices get the right color | everyone: run `npm test` |
+| `server/boxes.js` | Cleans up the AI's highlight boxes (keeps only well-formed ones) | build |
+| `client/src/components/NoticePhoto.jsx` | The photo with the scanner line and highlighter strokes | build / design |
+| `scripts/make-samples.py` | Rebuilds the fictional sample photos and measures their highlight boxes into `server/sample-boxes.json` | build |
+| `client/public/samples/` | The sample photos the sample buttons show | demo |
 | `server/prompts.js` | The two prompts, word for word from the plan | rules/prompts person |
 | `server/ai.js` | Picks the AI provider from `AI_PROVIDER` in `.env` (default: Gemini) | build |
 | `server/gemini.js` | The two AI calls via Google Gemini (free tier). Retries when Google is busy, then falls back to a lighter model | build |

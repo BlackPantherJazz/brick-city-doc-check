@@ -19,12 +19,12 @@ export async function readNotice({ photo, sample, name = 'notice.jpg' }) {
 }
 
 /** Confirmed facts in -> { check, verdict_line, explanation, letter, source }. */
-export async function explainNotice({ fields, units, language }) {
+export async function explainNotice({ fields, coverage, language }) {
   return asJson(
     await fetch('/api/explain', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fields, units, language }),
+      body: JSON.stringify({ fields, coverage, language }),
     })
   );
 }

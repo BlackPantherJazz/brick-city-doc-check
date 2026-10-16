@@ -13,6 +13,11 @@ import { DEBUG } from './debug.js';
 import Upload from './screens/Upload.jsx';
 import Confirm from './screens/Confirm.jsx';
 import Result from './screens/Result.jsx';
+import NoticePhoto from './components/NoticePhoto.jsx';
+
+// Let the scan animation play for at least this long, even when the answer is instant.
+const MIN_SCAN_MS = 1400;
+const minScan = (promise) => Promise.all([promise, new Promise((r) => setTimeout(r, MIN_SCAN_MS))]).then(([v]) => v);
 
 function savedLang() {
   try {
@@ -27,7 +32,8 @@ export default function App() {
   const [step, setStep] = useState('upload');
   const [info, setInfo] = useState(null);
   const [fields, setFields] = useState(null);
-  const [units, setUnits] = useState('unknown');
+  const [coverage, setCoverage] = useState(undefined); // answer to the owner-occupied question
+  const [photoUrl, setPhotoUrl] = useState(null); // the tenant's photo, kept in this browser tab only
   const [missing, setMissing] = useState([]);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
@@ -49,13 +55,15 @@ export default function App() {
       localStorage.setItem('kyn-lang', code);
     } catch {}
     // On the result screen, re-run the explanation in the new language.
-    if (step === 'result' && fields) runCheck(fields, units, code);
+    if (step === 'result' && fields) runCheck(fields, coverage, code);
   }
 
   function startOver() {
     stopSpeaking();
     setFields(null);
-    setUnits('unknown');
+    setCoverage(undefined);
+    if (photoUrl?.startsWith('blob:')) URL.revokeObjectURL(photoUrl); // free the photo from memory
+    setPhotoUrl(null);
     setMissing([]);
     setResult(null);
     setError('');
@@ -67,7 +75,8 @@ export default function App() {
     setStep('reading');
     try {
       const photo = await prepareImage(file);
-      const { fields } = await readNotice({ photo, name: file.name });
+      setPhotoUrl(URL.createObjectURL(photo)); // show the photo while the AI reads it
+      const { fields } = await minScan(readNotice({ photo, name: file.name }));
       setFields(fields);
       setStep('confirm');
     } catch {
@@ -79,8 +88,9 @@ export default function App() {
   async function handleSample(sample) {
     setError('');
     setStep('reading');
+    setPhotoUrl(`/samples/${sample}.jpg`);
     try {
-      const { fields } = await readNotice({ sample });
+      const { fields } = await minScan(readNotice({ sample }));
       setFields(fields);
       setStep('confirm');
     } catch {
@@ -89,11 +99,11 @@ export default function App() {
     }
   }
 
-  async function runCheck(f = fields, u = units, language = lang) {
+  async function runCheck(f = fields, cov = coverage, language = lang) {
     setError('');
     setStep('checking');
     try {
-      const out = await explainNotice({ fields: f, units: u, language });
+      const out = await explainNotice({ fields: f, coverage: cov, language });
       if (out.check.status === 'needs_info') {
         // The rules code needs more facts. Go back and ask — never guess.
         setMissing(out.check.missing);
@@ -142,7 +152,14 @@ export default function App() {
 
         {step === 'upload' && <Upload t={t} onPhoto={handlePhoto} onSample={handleSample} />}
 
-        {(step === 'reading' || step === 'checking') && (
+        {step === 'reading' && photoUrl && (
+          <div className="reading" role="status">
+            <NoticePhoto src={photoUrl} t={t} scanning />
+            <p className="reading-caption">{t.reading}</p>
+          </div>
+        )}
+
+        {((step === 'reading' && !photoUrl) || step === 'checking') && (
           <div className="loading" role="status">
             <div className="spinner" />
             <p>{step === 'reading' ? t.reading : t.checking}</p>
@@ -154,8 +171,9 @@ export default function App() {
             t={t}
             fields={fields}
             setFields={setFields}
-            units={units}
-            setUnits={setUnits}
+            photoUrl={photoUrl}
+            coverage={coverage}
+            setCoverage={setCoverage}
             missing={missing}
             onCheck={() => runCheck()}
             onRetake={startOver}

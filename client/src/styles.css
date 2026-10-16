@@ -116,9 +116,12 @@ button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .two label { margin: 6px 0; min-width: 0; }
 .two input { min-width: 0; max-width: 100%; padding: 12px 8px; }
 .missing input { border-color: var(--red); background: var(--red-bg); }
-fieldset.units { border: 1.5px solid var(--line); background: var(--card); border-radius: var(--radius); padding: 12px; margin: 18px 0 4px; }
-fieldset.units.missing { border-color: var(--red); background: var(--red-bg); }
-fieldset.units legend { font-weight: 700; padding: 0 6px; }
+fieldset.coverage { border: 2px solid var(--accent); background: var(--card); border-radius: var(--radius); padding: 14px; margin: 16px 0 8px; }
+fieldset.coverage legend { float: left; width: 100%; font-weight: 700; padding: 0; line-height: 1.35; } /* float keeps the question inside the box */
+fieldset.coverage legend + * { clear: both; }
+fieldset.coverage .row { margin-top: 10px; }
+.why-ask { color: var(--muted); font-size: .9rem; margin: 12px 2px 0; }
+.big:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 .warn { background: var(--yellow-bg); border-left: 5px solid var(--yellow-edge); padding: 10px 12px; border-radius: 8px; margin: 10px 0; }
 .error { background: var(--red-bg); color: var(--red); border-left: 5px solid var(--red); padding: 12px; border-radius: 8px; font-weight: 600; }
 
@@ -214,3 +217,47 @@ fieldset.units legend { font-weight: 700; padding: 0 6px; }
 .stat .l { display: block; font-size: .85rem; line-height: 1.35; color: var(--muted); margin-top: 4px; }
 .stats .src { font-size: .75rem; margin: 8px 0 0; }
 .stats .src a { color: var(--muted); text-underline-offset: 2px; }
+
+/* ── The notice photo with highlighter strokes ─────────────────────
+   Boxes are placed in % of the photo, so they stay on the right words
+   at any screen size. The stroke is a ::before layer blended with
+   "multiply", so the yellow mixes into the paper like real ink.        */
+.notice-photo { margin: 14px 0 18px; border-radius: 14px; overflow: hidden;
+  background: #2a2440; line-height: 0; isolation: isolate; box-shadow: 0 10px 28px rgba(30,27,75,.18); }
+.photo-frame { position: relative; line-height: 0; }
+.notice-photo img { display: block; width: 100%; height: auto; transition: filter .4s; }
+.notice-photo figcaption { line-height: 1.4; padding: 10px 14px; font-size: .88rem; color: var(--muted); background: var(--card); }
+
+.hl { position: absolute; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 4px; }
+.hl::before { content: ''; position: absolute; inset: 0; border-radius: 3px 7px 4px 6px;
+  background: rgba(255, 221, 51, .62); mix-blend-mode: multiply;
+  clip-path: inset(0 100% 0 0); animation: hl-swipe .45s cubic-bezier(.3,.7,.3,1) forwards;
+  animation-delay: inherit; transition: opacity .2s, background-color .2s; }
+.hl.urgent::before { background: rgba(255, 94, 130, .5); }
+.has-active .hl:not(.on)::before { opacity: .28; }
+.hl.on::before { background: rgba(255, 204, 0, .8); }
+.hl.urgent.on::before { background: rgba(255, 70, 110, .65); }
+.hl.on, .hl:focus-visible { outline: 2.5px solid var(--ink); outline-offset: 3px; }
+.hl-tag { position: absolute; top: calc(100% + 8px); left: -3px; white-space: nowrap; z-index: 2;
+  background: var(--ink); color: #fff; font-size: .78rem; font-weight: 700; line-height: 1.2;
+  padding: 5px 9px; border-radius: 7px; pointer-events: none; }
+@keyframes hl-swipe { to { clip-path: inset(0 0 0 0); } }
+
+/* While the AI reads: a scanner line sweeps the photo */
+.is-scanning img { filter: saturate(.75) brightness(.9); }
+.scanline { position: absolute; left: 0; right: 0; height: 18%; top: -18%; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(79,70,229,.22) 75%, rgba(165,170,255,.95) 97%, transparent);
+  animation: scan 1.7s cubic-bezier(.45,0,.55,1) infinite; }
+@keyframes scan { to { top: 100%; } }
+.reading { padding-top: 4px; }
+.reading-caption { text-align: center; font-weight: 700; font-size: 1.1rem; margin: 6px 0 0; }
+
+/* Swatch beside a form label = "this came from the highlighted spot" */
+.lbl { display: flex; align-items: center; gap: 7px; }
+.swatch { flex: none; width: 16px; height: 10px; border-radius: 2px 4px 2px 3px; background: rgba(255, 214, 10, .95); }
+.swatch.urgent { background: rgba(255, 94, 130, .85); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hl::before { animation: none; clip-path: none; }
+  .scanline { animation: none; top: 41%; }
+}
