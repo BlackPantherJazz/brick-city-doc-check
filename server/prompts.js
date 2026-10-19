@@ -69,8 +69,8 @@ ${JSON.stringify(fields, null, 2)}
 RULES-CHECK RESULT (decided by code, not by you):
 status: ${check.status}
 verdict line to repeat exactly: ${verdictLine}
-reasons: ${check.reasons.join(' ')}
-checklist: ${check.checklist.map((c) => c.item).join(' | ') || 'none'}
+reasons: ${check.reasons.map((r) => r.en).join(' ')}
+checklist: ${check.checklist.map((c) => c.text.en).join(' | ') || 'none'}
 
 OUTPUT FORMAT: return ONLY JSON, no other text:
 {

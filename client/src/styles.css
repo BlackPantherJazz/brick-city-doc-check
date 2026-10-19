@@ -33,10 +33,15 @@
 html, body {
   margin: 0;
   background-color: var(--night);
-  /* brick courses: horizontal mortar every 34px, vertical joints every 68px */
+  /* The wall, in layers (the first one listed sits on top):
+     1. pink neon spilling down from the sign
+     2. a night shade, darker toward the bottom, so text stays easy to read
+     3. the bricks themselves (drawn by scripts/make-brick.py) */
   background-image:
-    repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 2px, transparent 2px 34px),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.028) 0 2px, transparent 2px 68px);
+    radial-gradient(ellipse 90% 340px at 50% -60px, rgba(255, 79, 139, .22), transparent 70%),
+    linear-gradient(rgba(28, 13, 12, .30), rgba(28, 13, 12, .62) 420px, rgba(28, 13, 12, .70)),
+    url('./assets/brick.svg');
+  background-size: auto, auto, 320px 192px;
   color: var(--ink);
   font-family: var(--body);
   font-size: 18px;

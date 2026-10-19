@@ -123,3 +123,21 @@ test('voice: raw PCM gets a correct WAV header', async () => {
   assert.equal(wav.readUInt32LE(24), 24000); // sample rate
   assert.equal(wav.readUInt32LE(40), 480); // data size
 });
+
+test('phrasebook: every message has all four languages, filled in', async () => {
+  const { msg, MESSAGE_KEYS } = await import('./messages.js');
+  const vars = { current: 1500, next: 1800, percent: 20, min: 30, days: 31, u: 5, cap: 4 };
+  for (const key of MESSAGE_KEYS) {
+    const m = msg(key, vars);
+    for (const lang of ['en', 'es', 'pt', 'ht']) {
+      assert.ok(m[lang] && m[lang].trim(), `${key} is missing ${lang}`);
+      assert.ok(!m[lang].includes('undefined'), `${key}.${lang} has a blank number`);
+    }
+  }
+});
+
+test('phrasebook: the result screen gets every language for reasons and checklist', () => {
+  const check = checkNotice({ notice_type: 'rent_increase', current_rent: 1500, new_rent: 1800, notice_date: '2026-01-01', effective_date: '2026-02-01' });
+  assert.match(check.reasons[0].ht, /Lwaye a/);
+  assert.match(check.checklist[0].text.es, /días de aviso/);
+});

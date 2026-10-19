@@ -128,7 +128,7 @@ export default function Result({ t, lang, result, info, photoUrl, busy, translat
           <summary>{t.why}</summary>
           <ul>
             {check.reasons.map((r) => (
-              <li key={r}>{r}</li>
+              <li key={r.en}>{r[lang] ?? r.en}</li>
             ))}
           </ul>
         </details>
@@ -139,8 +139,8 @@ export default function Result({ t, lang, result, info, photoUrl, busy, translat
           <h2>{t.checklist}</h2>
           <ul>
             {check.checklist.map((c) => (
-              <li key={c.item} className={c.ok === true ? 'ok' : c.ok === false ? 'bad' : ''}>
-                {c.item}
+              <li key={c.text.en} className={c.ok === true ? 'ok' : c.ok === false ? 'bad' : ''}>
+                {c.text[lang] ?? c.text.en}
               </li>
             ))}
           </ul>
