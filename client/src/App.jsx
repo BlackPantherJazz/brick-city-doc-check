@@ -7,7 +7,7 @@
 //
 // Screen changes go through transition(), so shared elements (the notice
 // photo) morph from one screen to the next instead of jumping.
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { T, LANGS } from './i18n.js';
 import { getInfo, readNotice, explainNotice } from './api.js';
 import { prepareImage } from './image.js';
@@ -43,6 +43,11 @@ export default function App() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false); // waiting on the verdict (button shows a spinner)
   const [intro] = useState(() => firstVisitThisSession()); // neon sign flickers on once per visit
+  const [translating, setTranslating] = useState(null); // language code while a new explanation is on its way
+  // Explanations we already have, by notice + language. Switching back to a
+  // language you've seen is instant, and costs no AI call.
+  const explained = useRef(new Map());
+  const relangTicket = useRef(0); // only the latest language tap gets to update the screen
   const t = T[lang];
 
   useEffect(() => {
@@ -60,8 +65,36 @@ export default function App() {
     try {
       localStorage.setItem('kyn-lang', code);
     } catch {}
-    // On the result screen, re-run the explanation in the new language.
-    if (step === 'result' && fields) runCheck(fields, coverage, code);
+    // On the result screen, swap the explanation in place (no page jump).
+    if (step === 'result' && fields) relang(code);
+  }
+
+  const cacheKey = (f, cov, language) => JSON.stringify([f, cov ?? null, language]);
+
+  /**
+   * Language change on the result screen. Unlike runCheck, this stays on the
+   * page: no scroll to the top, no screen transition. The verdict line swaps
+   * at once (every language is already in the rules data); the explanation
+   * shows a "translating" shimmer until the AI's new version arrives.
+   */
+  async function relang(code) {
+    const ticket = ++relangTicket.current;
+    const hit = explained.current.get(cacheKey(fields, coverage, code));
+    if (hit) {
+      setTranslating(null);
+      setResult(hit);
+      return;
+    }
+    setTranslating(code);
+    try {
+      const out = await explainNotice({ fields, coverage, language: code });
+      explained.current.set(cacheKey(fields, coverage, code), out);
+      if (ticket === relangTicket.current) setResult(out);
+    } catch {
+      if (ticket === relangTicket.current) setError(T[code].errorGeneric);
+    } finally {
+      if (ticket === relangTicket.current) setTranslating(null);
+    }
   }
 
   function startOver() {
@@ -74,6 +107,9 @@ export default function App() {
     setResult(null);
     setError('');
     setBusy(false);
+    setTranslating(null);
+    relangTicket.current++; // ignore any translation still on its way
+    explained.current.clear();
     transition(() => setStep('upload'));
   }
 
@@ -122,6 +158,7 @@ export default function App() {
         setMissing(out.check.missing);
         return;
       }
+      explained.current.set(cacheKey(f, cov, language), out);
       window.scrollTo(0, 0);
       transition(() => {
         setMissing([]);
@@ -197,7 +234,7 @@ export default function App() {
         )}
 
         {step === 'result' && result && (
-          <Result t={t} lang={lang} result={result} info={info} photoUrl={photoUrl} busy={busy} onStartOver={startOver} />
+          <Result t={t} lang={lang} result={result} info={info} photoUrl={photoUrl} busy={busy} translating={translating} onStartOver={startOver} />
         )}
       </main>
 

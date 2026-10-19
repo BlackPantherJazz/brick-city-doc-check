@@ -176,6 +176,26 @@ fieldset.coverage .row { margin-top: 12px; }
 .listen[aria-busy="true"] { opacity: .8; }
 .explain { font-size: 1.15rem; margin: 16px 0; }
 
+/* Language switch on the result screen: the old text dims and shimmers
+   while the AI writes the new one, then the new text fades up into place. */
+.swap { position: relative; }
+.swap.pending .explain, .letter.pending { opacity: .35; filter: blur(.6px); transition: opacity .25s, filter .25s; }
+.swap.pending::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: 8px;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 225, 74, .14) 50%, transparent 70%);
+  background-size: 250% 100%; animation: shimmer 1.2s linear infinite;
+}
+@keyframes shimmer { from { background-position: 125% 0; } to { background-position: -125% 0; } }
+.translating {
+  display: inline-flex; align-items: center; gap: 8px; margin: 12px 0 0;
+  padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: .95rem;
+  background: var(--night-3); color: var(--marker); border: 1px solid var(--line);
+}
+.translating .btn-spin { width: 14px; height: 14px; border-width: 2px; border-color: rgba(255, 225, 74, .25); border-top-color: var(--marker); }
+.fade-in { animation: fade-up .45s ease-out both; }
+.verdict .line { animation: fade-up .35s ease-out both; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
 .help { background: var(--night-2); border: 2px solid rgba(255,59,92,.6); border-radius: var(--radius); padding: 16px; margin: 18px 0; }
 .help.urgent { border-color: var(--red); box-shadow: 0 0 0 4px rgba(255,59,92,.15), 0 0 30px rgba(255,59,92,.25); }
 .help .org { padding: 10px 0; border-top: 1px solid var(--line); }
@@ -281,5 +301,6 @@ fieldset.coverage .row { margin-top: 12px; }
   .hl::before { animation: none; clip-path: none; }
   .scanline { animation: none; top: 41%; }
   .btn-spin, .spinner { animation-duration: 2s; }
+  .fade-in, .verdict .line, .swap.pending::after { animation: none; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }

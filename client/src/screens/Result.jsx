@@ -5,8 +5,13 @@ import { useCountUp, buzz } from '../motion.js';
 
 const ICON = { green: '✓', yellow: '!', red: '✕' };
 
-export default function Result({ t, lang, result, info, photoUrl, busy, onStartOver }) {
-  const { check, verdict_line, explanation, letter, source } = result;
+export default function Result({ t, lang, result, info, photoUrl, busy, translating, onStartOver }) {
+  const { check, explanation, letter, source } = result;
+  // The verdict line comes from the rules data, which has every language,
+  // so it can switch the moment a language button is tapped.
+  const verdict_line = check.headline?.[lang] ?? result.verdict_line;
+  // The explanation and letter come from the AI, so they wait for it.
+  const pending = Boolean(translating);
   const escalate = check.status === 'escalate';
   const color = check.color || 'none';
   const [voice, setVoice] = useState('idle'); // idle | loading | playing
@@ -51,7 +56,7 @@ export default function Result({ t, lang, result, info, photoUrl, busy, onStartO
   const shownLabel = shown === null ? null : `${shown > 0 ? '+' : ''}${shown}%`;
 
   return (
-    <section className={`result ${escalate ? 'escalate' : ''}`} aria-busy={busy}>
+    <section className={`result ${escalate ? 'escalate' : ''}`} aria-busy={busy || pending}>
       <div className={`verdict ${escalate ? 'red' : color}`} role="status">
         {/* The tenant's own photo, shrunk into the corner: the confirm screen's photo morphs into this. */}
         {photoUrl && <img className="result-thumb" src={photoUrl} alt="" style={{ viewTransitionName: 'notice' }} />}
@@ -73,11 +78,13 @@ export default function Result({ t, lang, result, info, photoUrl, busy, onStartO
             </span>
           )
         )}
-        <p className="line">{verdict_line}</p>
+        <p className="line" key={lang}>
+          {verdict_line}
+        </p>
       </div>
 
       {canSpeak && (
-        <button className="big listen" onClick={toggleSpeak} aria-busy={voice === 'loading'}>
+        <button className="big listen" onClick={toggleSpeak} aria-busy={voice === 'loading'} disabled={pending}>
           {voice === 'loading' ? (
             <>
               <span className="btn-spin" aria-hidden="true" style={{ borderTopColor: 'var(--ink)' }} /> {t.listen}
@@ -101,7 +108,17 @@ export default function Result({ t, lang, result, info, photoUrl, busy, onStartO
         </button>
       )}
 
-      <p className="explain">{explanation}</p>
+      <div className={`swap ${pending ? 'pending' : ''}`}>
+        {pending && (
+          <p className="translating" role="status">
+            <span className="btn-spin" aria-hidden="true" /> {t.translating}
+          </p>
+        )}
+        {/* key={explanation}: React swaps in a fresh element, which replays the fade-in. */}
+        <p className="explain fade-in" key={explanation}>
+          {explanation}
+        </p>
+      </div>
       {source === 'fallback' && <p className="note">{t.fallback}</p>}
 
       {(escalate || check.color === 'red') && <Help t={t} info={info} urgent={escalate} />}
@@ -131,7 +148,7 @@ export default function Result({ t, lang, result, info, photoUrl, busy, onStartO
       )}
 
       {letter && (
-        <div className="letter">
+        <div className={`letter ${pending ? 'pending' : ''}`}>
           <h2>{t.letterTitle}</h2>
           <textarea readOnly value={letter} rows={14} />
           <button onClick={copyLetter}>{copied ? t.copied : t.copy}</button>
