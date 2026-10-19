@@ -10,6 +10,9 @@ import { readNotice, explain, hasKey, MODEL } from './ai.js';
 import { SAMPLES, sampleFromFilename, mockExplain } from './mock.js';
 import { cleanLocations } from './boxes.js';
 
+// Node's fetch says only "fetch failed" for network problems; the real reason is in err.cause.
+const why = (err) => [err.status, err.message, err.cause?.code, err.cause?.message].filter(Boolean).join(' | ');
+
 const app = express();
 app.use(express.json({ limit: '1mb' }));
 
@@ -49,7 +52,7 @@ app.post('/api/read', upload.single('photo'), async (req, res) => {
     res.json({ fields, source: 'ai' });
   } catch (err) {
     // Log the error type only — never the notice contents.
-    console.error('read failed:', err.status || '', err.message);
+    console.error('read failed:', why(err));
     res.status(502).json({ error: 'read_failed' });
   }
 });
@@ -76,7 +79,7 @@ app.post('/api/explain', async (req, res) => {
     if (check.headline) out.verdict_line = check.headline[language];
     res.json({ check, ...out, source: 'ai' });
   } catch (err) {
-    console.error('explain failed:', err.status || '', err.message);
+    console.error('explain failed:', why(err));
     // Fallback so the demo never dead-ends: template text, flagged as such.
     res.json({ check, ...mockExplain({ fields: facts, check, language }), source: 'fallback' });
   }

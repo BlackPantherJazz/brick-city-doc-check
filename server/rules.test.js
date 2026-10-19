@@ -84,8 +84,14 @@ test('cleanLocations keeps good boxes and drops broken ones', async () => {
     effective_date: [0, 0, 1200, 50], // off the image
     landlord_or_company: null,
     made_up_field: [1, 2, 3, 4], // not a field we show
-  });
+  }, { pad: false });
   assert.deepEqual(out, { new_rent: [500, 300, 520, 380] });
+});
+
+test('cleanLocations pads boxes like a highlighter, staying on the image', async () => {
+  const { cleanLocations } = await import('./boxes.js');
+  assert.deepEqual(cleanLocations({ new_rent: [500, 300, 520, 380] }), { new_rent: [492, 295, 528, 385] });
+  assert.deepEqual(cleanLocations({ notice_date: [3, 2, 20, 998] }), { notice_date: [0, 0, 28, 1000] });
 });
 
 test('every sample photo has a box for each fact it shows', async () => {

@@ -8,7 +8,12 @@ export const BOX_FIELDS = [
   'current_rent', 'new_rent', 'deadline_to_respond', 'court_mention',
 ];
 
-export function cleanLocations(locations) {
+// AI boxes hug the letters tightly; a real highlighter overlaps them a little.
+const PAD_Y = 8; // out of 1000
+const PAD_X = 5;
+const clamp = (v) => Math.min(1000, Math.max(0, v));
+
+export function cleanLocations(locations, { pad = true } = {}) {
   const out = {};
   if (!locations || typeof locations !== 'object') return out;
   for (const field of BOX_FIELDS) {
@@ -18,7 +23,7 @@ export function cleanLocations(locations) {
     if (n.some((v) => !Number.isFinite(v) || v < 0 || v > 1000)) continue;
     const [ymin, xmin, ymax, xmax] = n;
     if (ymax <= ymin || xmax <= xmin) continue;
-    out[field] = n.map(Math.round);
+    out[field] = (pad ? [ymin - PAD_Y, xmin - PAD_X, ymax + PAD_Y, xmax + PAD_X].map(clamp) : n).map(Math.round);
   }
   return out;
 }
