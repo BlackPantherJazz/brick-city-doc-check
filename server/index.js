@@ -9,6 +9,7 @@ import { checkNotice, RULES } from './rules.js';
 import { readNotice, explain, hasKey, MODEL } from './ai.js';
 import { SAMPLES, sampleFromFilename, mockExplain } from './mock.js';
 import { cleanLocations } from './boxes.js';
+import { synthesize, ttsAvailable } from './tts.js';
 
 // Node's fetch says only "fetch failed" for network problems; the real reason is in err.cause.
 const why = (err) => [err.status, err.message, err.cause?.code, err.cause?.message].filter(Boolean).join(' | ');
@@ -33,6 +34,7 @@ app.get('/api/info', (_req, res) => {
     model: MODEL,
     rulesLastChecked: RULES.meta.rulesLastChecked,
     rulesVerified: RULES.meta.verified,
+    voice: ttsAvailable(),
     legalHelp: RULES.legalHelp,
   });
 });
@@ -82,6 +84,19 @@ app.post('/api/explain', async (req, res) => {
     console.error('explain failed:', why(err));
     // Fallback so the demo never dead-ends: template text, flagged as such.
     res.json({ check, ...mockExplain({ fields: facts, check, language }), source: 'fallback' });
+  }
+});
+
+// STEP C (optional) — read the explanation aloud with a real voice.
+// Returns a WAV file. 503 = no voice available here: the app uses the phone's voice instead.
+app.post('/api/speak', async (req, res) => {
+  if (!ttsAvailable()) return res.status(503).json({ error: 'no_tts' });
+  try {
+    const wav = await synthesize(req.body?.text);
+    res.set({ 'Content-Type': 'audio/wav', 'Cache-Control': 'no-store' }).send(wav);
+  } catch (err) {
+    console.error('speak failed:', why(err));
+    res.status(err.status === 400 ? 400 : 502).json({ error: 'speak_failed' });
   }
 });
 

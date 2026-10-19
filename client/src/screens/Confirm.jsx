@@ -7,7 +7,7 @@ import NoticePhoto from '../components/NoticePhoto.jsx';
 
 const TYPES = ['rent_increase', 'eviction_or_court', 'late_rent', 'lease_renewal', 'repairs_or_entry', 'other'];
 
-export default function Confirm({ t, fields, setFields, photoUrl, coverage, setCoverage, missing, onCheck, onRetake }) {
+export default function Confirm({ t, fields, setFields, photoUrl, coverage, setCoverage, missing, busy, onCheck, onRetake }) {
   const [active, setActive] = useState(null);
   const set = (key, value) => setFields({ ...fields, [key]: value });
   const num = (v) => (v === '' ? null : Number(v));
@@ -142,8 +142,14 @@ export default function Confirm({ t, fields, setFields, photoUrl, coverage, setC
         </>
       )}
 
-      <button className="big primary" onClick={onCheck} disabled={needCoverage && !coverage}>
-        {t.check}
+      <button className="big primary" onClick={onCheck} disabled={busy || (needCoverage && !coverage)} aria-busy={busy}>
+        {busy ? (
+          <>
+            <span className="btn-spin" aria-hidden="true" /> {t.checking}
+          </>
+        ) : (
+          t.check
+        )}
       </button>
       <button className="link" onClick={onRetake}>
         {t.retake}

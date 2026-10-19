@@ -4,6 +4,14 @@ Take a photo of a landlord's letter and get a plain-language verdict (green / ye
 
 > **The AI reads and explains. Plain code makes the legal call.** Nothing is stored.
 
+## What's new in Phase 2: Brick and Neon
+
+- **New look:** Newark at night. Oxblood brick, a neon "Brick City Doc Check" sign that flickers on when the app opens, highlighter yellow for actions. Body text uses Atkinson Hyperlegible, a font designed for low-vision readers.
+- **Real voices:** Listen now uses Gemini text-to-speech (`server/tts.js`, `POST /api/speak`), which can speak Haitian Creole properly (Google lists Kreyòl as preview). If it fails, the phone's own voice takes over.
+- **The verdict lands:** the percentage counts up with a neon flicker, and Android phones buzz once for a red result.
+- **Screens morph:** the photo shrinks into the verdict card (View Transitions API). Browsers without it just switch screens.
+- **Accessible motion:** every animation is skipped when the phone's "reduce motion" setting is on.
+
 ## What's new in v2
 
 - **The AI shows its work.** After reading a photo, highlighter strokes swipe across every fact the AI found: rent, dates, landlord, and court language (pink). Tap a stroke to jump to its field; tap a field to light up where it came from.

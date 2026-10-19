@@ -16,7 +16,12 @@ export default function NoticePhoto({ src, t, locations = {}, active = null, onP
   const entries = Object.entries(locations).sort((a, b) => a[1][0] - b[1][0]);
 
   return (
-    <figure className={`notice-photo ${scanning ? 'is-scanning' : ''} ${active ? 'has-active' : ''}`}>
+    // viewTransitionName "notice": the same name on the result screen's thumbnail,
+    // so the browser morphs the photo from one screen into the other.
+    <figure
+      className={`notice-photo ${scanning ? 'is-scanning' : ''} ${active ? 'has-active' : ''}`}
+      style={{ viewTransitionName: 'notice' }}
+    >
       {/* Highlights are positioned in % of THIS frame, which is exactly the image (not the caption). */}
       <div className="photo-frame">
       <img src={src} alt={t.photoAlt} />

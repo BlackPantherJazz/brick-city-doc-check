@@ -1,31 +1,42 @@
 import { useEffect, useState } from 'react';
-import { speak, stopSpeaking, canSpeak } from '../speak.js';
+import { speakSmart, stopSpeaking, canSpeak } from '../speak.js';
 import { DEBUG } from '../debug.js';
+import { useCountUp, buzz } from '../motion.js';
 
 const ICON = { green: '✓', yellow: '!', red: '✕' };
 
-export default function Result({ t, lang, result, info, onStartOver }) {
+export default function Result({ t, lang, result, info, photoUrl, busy, onStartOver }) {
   const { check, verdict_line, explanation, letter, source } = result;
   const escalate = check.status === 'escalate';
   const color = check.color || 'none';
-  const [speaking, setSpeaking] = useState(false);
+  const [voice, setVoice] = useState('idle'); // idle | loading | playing
   const [copied, setCopied] = useState(false);
+
+  // The verdict lands: the percentage counts up, the sign flickers on,
+  // and phones that can, buzz once for a red result.
+  const shown = useCountUp(check.percent);
+  useEffect(() => {
+    if (check.color === 'red') buzz();
+  }, [check.color]);
 
   // Stop talking if the language changes or the screen closes.
   useEffect(() => () => stopSpeaking(), []);
   useEffect(() => {
     stopSpeaking();
-    setSpeaking(false);
+    setVoice('idle');
   }, [lang, result]);
 
-  function toggleSpeak() {
-    if (speaking) {
+  async function toggleSpeak() {
+    if (voice !== 'idle') {
       stopSpeaking();
-      setSpeaking(false);
-    } else {
-      setSpeaking(true);
-      speak(`${verdict_line}. ${explanation}`, lang, () => setSpeaking(false));
+      setVoice('idle');
+      return;
     }
+    setVoice('loading');
+    await speakSmart(`${verdict_line} ${explanation}`, lang, {
+      onStart: () => setVoice('playing'),
+      onEnd: () => setVoice('idle'),
+    });
   }
 
   async function copyLetter() {
@@ -36,25 +47,57 @@ export default function Result({ t, lang, result, info, onStartOver }) {
     } catch {}
   }
 
+  const pctLabel = check.percent === null ? null : `${check.percent > 0 ? '+' : ''}${check.percent}%`;
+  const shownLabel = shown === null ? null : `${shown > 0 ? '+' : ''}${shown}%`;
+
   return (
-    <section className={`result ${escalate ? 'escalate' : ''}`}>
-      <div className={`verdict ${color}`} role="status">
-        {ICON[color] && (
-          <span className="icon" aria-hidden="true">
-            {ICON[color]}
-          </span>
+    <section className={`result ${escalate ? 'escalate' : ''}`} aria-busy={busy}>
+      <div className={`verdict ${escalate ? 'red' : color}`} role="status">
+        {/* The tenant's own photo, shrunk into the corner: the confirm screen's photo morphs into this. */}
+        {photoUrl && <img className="result-thumb" src={photoUrl} alt="" style={{ viewTransitionName: 'notice' }} />}
+
+        {pctLabel ? (
+          <>
+            <p className="big-num lit" aria-hidden="true">
+              {shownLabel}
+            </p>
+            {/* The big number is hidden from screen readers while it counts; this says it once, plainly. */}
+            <p className="sr-only">
+              {t.increase}: {pctLabel}
+            </p>
+          </>
+        ) : (
+          ICON[escalate ? 'red' : color] && (
+            <span className="icon lit" aria-hidden="true">
+              {escalate ? '!' : ICON[color]}
+            </span>
+          )
         )}
         <p className="line">{verdict_line}</p>
-        {check.percent !== null && (
-          <p className="pct">
-            {t.increase}: {check.percent}%
-          </p>
-        )}
       </div>
 
       {canSpeak && (
-        <button className="big listen" onClick={toggleSpeak}>
-          <span aria-hidden="true">{speaking ? '■' : '🔊'}</span> {speaking ? t.stop : t.listen}
+        <button className="big listen" onClick={toggleSpeak} aria-busy={voice === 'loading'}>
+          {voice === 'loading' ? (
+            <>
+              <span className="btn-spin" aria-hidden="true" style={{ borderTopColor: 'var(--ink)' }} /> {t.listen}
+            </>
+          ) : (
+            <>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                {voice === 'playing' ? (
+                  <rect x="7" y="7" width="10" height="10" rx="1.5" />
+                ) : (
+                  <>
+                    <path d="M4 10v4h4l5 4V6L8 10z" />
+                    <path d="M16.5 8.5a5 5 0 0 1 0 7" />
+                    <path d="M19 6a8.5 8.5 0 0 1 0 12" />
+                  </>
+                )}
+              </svg>
+              {voice === 'playing' ? t.stop : t.listen}
+            </>
+          )}
         </button>
       )}
 
@@ -117,7 +160,10 @@ function Help({ t, info, urgent }) {
             <p className="name">{o.name}</p>
             {dial ? (
               <a className="call" href={`tel:${dial}`}>
-                📞 {t.call} {o.phone}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+                </svg>
+                {t.call} {o.phone}
               </a>
             ) : (
               <p className="dev">{o.phone}</p>

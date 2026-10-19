@@ -100,3 +100,26 @@ test('every sample photo has a box for each fact it shows', async () => {
   }
   assert.ok(SAMPLES.court.locations.court_mention);
 });
+
+test('voice: finds audio in the Interactions API response and keeps WAV as-is', async () => {
+  const { findAudio, pcmToWav } = await import('./tts.js');
+  const wav = pcmToWav(Buffer.alloc(100), 24000);
+  const response = { id: 'x', steps: [{ type: 'thought' }, { type: 'model_output', content: [{ type: 'audio', data: wav.toString('base64'), mime_type: 'audio/wav' }] }] };
+  const found = findAudio(response);
+  assert.equal(found.mimeType, 'audio/wav');
+  assert.equal(Buffer.from(found.data, 'base64').toString('ascii', 0, 4), 'RIFF');
+});
+
+test('voice: also understands the older inlineData shape', async () => {
+  const { findAudio } = await import('./tts.js');
+  const found = findAudio({ candidates: [{ content: { parts: [{ inlineData: { mimeType: 'audio/L16;codec=pcm;rate=24000', data: 'AAAA' } }] } }] });
+  assert.equal(found.mimeType, 'audio/L16;codec=pcm;rate=24000');
+});
+
+test('voice: raw PCM gets a correct WAV header', async () => {
+  const { pcmToWav } = await import('./tts.js');
+  const wav = pcmToWav(Buffer.alloc(480), 24000);
+  assert.equal(wav.length, 524);
+  assert.equal(wav.readUInt32LE(24), 24000); // sample rate
+  assert.equal(wav.readUInt32LE(40), 480); // data size
+});

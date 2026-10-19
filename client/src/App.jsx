@@ -1,15 +1,19 @@
 // The whole app is a small "state machine": one `step` value decides
 // which screen shows.
 //
-//   upload ──photo──▶ reading ──▶ confirm ──check──▶ checking ──▶ result
+//   upload ──photo──▶ reading ──▶ confirm ──check──▶ result
 //     ▲                              │ (needs_info: stay here and ask)
-//     └──────────── start over ◀─────┴───────────────────────────────┘
+//     └──────────── start over ◀─────┴─────────────────────┘
+//
+// Screen changes go through transition(), so shared elements (the notice
+// photo) morph from one screen to the next instead of jumping.
 import { useEffect, useState } from 'react';
 import { T, LANGS } from './i18n.js';
 import { getInfo, readNotice, explainNotice } from './api.js';
 import { prepareImage } from './image.js';
 import { stopSpeaking } from './speak.js';
 import { DEBUG } from './debug.js';
+import { transition, firstVisitThisSession } from './motion.js';
 import Upload from './screens/Upload.jsx';
 import Confirm from './screens/Confirm.jsx';
 import Result from './screens/Result.jsx';
@@ -37,6 +41,8 @@ export default function App() {
   const [missing, setMissing] = useState([]);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false); // waiting on the verdict (button shows a spinner)
+  const [intro] = useState(() => firstVisitThisSession()); // neon sign flickers on once per visit
   const t = T[lang];
 
   useEffect(() => {
@@ -67,18 +73,21 @@ export default function App() {
     setMissing([]);
     setResult(null);
     setError('');
-    setStep('upload');
+    setBusy(false);
+    transition(() => setStep('upload'));
   }
 
   async function handlePhoto(file) {
     setError('');
-    setStep('reading');
+    transition(() => setStep('reading'));
     try {
       const photo = await prepareImage(file);
       setPhotoUrl(URL.createObjectURL(photo)); // show the photo while the AI reads it
       const { fields } = await minScan(readNotice({ photo, name: file.name }));
-      setFields(fields);
-      setStep('confirm');
+      transition(() => {
+        setFields(fields);
+        setStep('confirm');
+      });
     } catch {
       setError(t.errorRead);
       setStep('upload');
@@ -87,12 +96,16 @@ export default function App() {
 
   async function handleSample(sample) {
     setError('');
-    setStep('reading');
-    setPhotoUrl(`/samples/${sample}.jpg`);
+    transition(() => {
+      setPhotoUrl(`/samples/${sample}.jpg`);
+      setStep('reading');
+    });
     try {
       const { fields } = await minScan(readNotice({ sample }));
-      setFields(fields);
-      setStep('confirm');
+      transition(() => {
+        setFields(fields);
+        setStep('confirm');
+      });
     } catch {
       setError(t.errorGeneric);
       setStep('upload');
@@ -101,30 +114,32 @@ export default function App() {
 
   async function runCheck(f = fields, cov = coverage, language = lang) {
     setError('');
-    setStep('checking');
+    setBusy(true);
     try {
       const out = await explainNotice({ fields: f, coverage: cov, language });
       if (out.check.status === 'needs_info') {
         // The rules code needs more facts. Go back and ask — never guess.
         setMissing(out.check.missing);
-        setStep('confirm');
         return;
       }
-      setMissing([]);
-      setResult(out);
-      setStep('result');
       window.scrollTo(0, 0);
+      transition(() => {
+        setMissing([]);
+        setResult(out);
+        setStep('result');
+      });
     } catch {
       setError(t.errorGeneric);
-      setStep(result ? 'result' : 'confirm');
+    } finally {
+      setBusy(false);
     }
   }
 
   return (
-    <div className="app">
+    <div className={`app ${intro ? 'intro' : ''}`}>
       <header className="top">
-        <button className="brand" onClick={startOver} aria-label="Home">
-          Brick City Doc Check
+        <button className="brand" onClick={startOver} aria-label="Brick City Doc Check, home">
+          <span className="neon n1">Brick City</span> <span className="neon n2">Doc Check</span>
         </button>
         <nav className="langs" aria-label="Language">
           {LANGS.map((l) => (
@@ -159,10 +174,10 @@ export default function App() {
           </div>
         )}
 
-        {((step === 'reading' && !photoUrl) || step === 'checking') && (
+        {step === 'reading' && !photoUrl && (
           <div className="loading" role="status">
             <div className="spinner" />
-            <p>{step === 'reading' ? t.reading : t.checking}</p>
+            <p>{t.reading}</p>
           </div>
         )}
 
@@ -175,13 +190,14 @@ export default function App() {
             coverage={coverage}
             setCoverage={setCoverage}
             missing={missing}
+            busy={busy}
             onCheck={() => runCheck()}
             onRetake={startOver}
           />
         )}
 
         {step === 'result' && result && (
-          <Result t={t} lang={lang} result={result} info={info} onStartOver={startOver} />
+          <Result t={t} lang={lang} result={result} info={info} photoUrl={photoUrl} busy={busy} onStartOver={startOver} />
         )}
       </main>
 
