@@ -154,12 +154,18 @@ a { color: var(--marker); }
   35%, 100% { opacity: 1; }
 }
 
-.langs { display: flex; gap: 6px; }
+.top { flex-wrap: wrap; }
+/* Language switch: each language written in its own words, in one segmented bar */
+.langs { flex: 1 1 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; padding: 3px;
+  border-radius: 999px; background: rgba(12, 5, 4, .7); border: 1.5px solid var(--line); }
 .langs button {
-  min-width: 48px; min-height: 44px; padding: 6px 12px; border-radius: 999px;
-  background: transparent; color: var(--ink); border: 1.5px solid var(--line); font-weight: 700; font-size: .9rem;
+  min-width: 0; min-height: 44px; padding: 6px 4px; border-radius: 999px; border: 0;
+  background: transparent; color: var(--ink); font-weight: 700; font-size: .95rem; white-space: nowrap;
+  transition: background-color .2s, color .2s;
 }
-.langs button.on { background: var(--marker); color: var(--on-marker); border-color: var(--marker); }
+.langs button:hover:not(.on) { background: rgba(255, 244, 234, .08); }
+.langs button.on { background: var(--marker); color: var(--on-marker); }
+@media (min-width: 600px) { .langs { flex-basis: auto; flex-grow: 0; width: 400px; margin-left: auto; } }
 
 main { flex: 1; padding: 22px 18px 32px; }
 
@@ -388,7 +394,7 @@ fieldset.coverage .row { margin-top: 12px; }
 
 /* ── small phones ── */
 @media (max-width: 480px) {
-  .langs button { min-width: 44px; padding: 6px 9px; }
+  .langs button { font-size: .88rem; }
   .sign-small .board { flex-direction: column; align-items: center; gap: 0; padding: 4px 12px 7px; }
   .sign-small .script { font-size: 1.55rem; }
   .sign-small .block { font-size: .62rem; }

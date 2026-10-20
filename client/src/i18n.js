@@ -1,10 +1,10 @@
 // Every word on screen, in English, Spanish and Portuguese.
 // Have a native speaker skim these before the demo if you can.
 export const LANGS = [
-  { code: 'en', label: 'EN', name: 'English' },
-  { code: 'es', label: 'ES', name: 'Español' },
-  { code: 'pt', label: 'PT', name: 'Português' },
-  { code: 'ht', label: 'KR', name: 'Kreyòl ayisyen' },
+  { code: 'en', label: 'English', name: 'English' },
+  { code: 'es', label: 'Español', name: 'Español' },
+  { code: 'pt', label: 'Português', name: 'Português' },
+  { code: 'ht', label: 'Kreyòl', name: 'Kreyòl ayisyen' },
 ];
 
 export const T = {
