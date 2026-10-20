@@ -9,9 +9,9 @@ export const LANGS = [
 
 export const T = {
   en: {
-    headline: 'Got a letter from your landlord?',
-    sub: 'Take a photo. We\'ll tell you what it means.',
-    takePhoto: 'Take a photo of the notice',
+    headline: 'Got a notice or court papers?',
+    sub: 'From your landlord or the court. Take a photo and we\'ll tell you what it means.',
+    takePhoto: 'Take a photo',
     choosePhoto: 'or choose a photo',
     samples: 'Try a sample notice',
     sampleLegal: 'Small increase',
@@ -82,9 +82,9 @@ export const T = {
     statsSource: 'Source: U.S. Census Bureau',
   },
   es: {
-    headline: '¿Recibió una carta de su casero?',
-    sub: 'Tome una foto. Le diremos qué significa.',
-    takePhoto: 'Tome una foto del aviso',
+    headline: '¿Recibió un aviso o papeles de la corte?',
+    sub: 'De su casero o de la corte. Tome una foto y le diremos qué significa.',
+    takePhoto: 'Tome una foto',
     choosePhoto: 'o elija una foto',
     samples: 'Pruebe un aviso de ejemplo',
     sampleLegal: 'Aumento pequeño',
@@ -155,9 +155,9 @@ export const T = {
     statsSource: 'Fuente: Oficina del Censo de EE. UU.',
   },
   pt: {
-    headline: 'Recebeu uma carta do senhorio?',
-    sub: 'Tire uma foto. Diremos o que significa.',
-    takePhoto: 'Tire uma foto do aviso',
+    headline: 'Recebeu um aviso ou papéis do tribunal?',
+    sub: 'Do senhorio ou do tribunal. Tire uma foto e diremos o que significa.',
+    takePhoto: 'Tire uma foto',
     choosePhoto: 'ou escolha uma foto',
     samples: 'Teste um aviso de exemplo',
     sampleLegal: 'Aumento pequeno',
@@ -228,9 +228,9 @@ export const T = {
     statsSource: 'Fonte: Censo dos EUA',
   },
   ht: {
-    headline: 'Ou resevwa yon lèt nan men mèt kay ou?',
-    sub: 'Pran yon foto. N ap di w sa li vle di.',
-    takePhoto: 'Pran yon foto avi a',
+    headline: 'Ou resevwa yon avi oswa papye tribinal?',
+    sub: 'Nan men mèt kay ou oswa tribinal la. Pran yon foto, n ap di w sa li vle di.',
+    takePhoto: 'Pran yon foto',
     choosePhoto: 'oswa chwazi yon foto',
     samples: 'Eseye yon avi egzanp',
     sampleLegal: 'Ti ogmantasyon',

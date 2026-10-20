@@ -199,7 +199,7 @@ h2 { font-family: var(--display); font-weight: 900; font-size: 1.5rem; line-heig
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── home ── */
-.headline { font-size: clamp(3rem, 14.5vw, 4.4rem); line-height: .92; margin: 0 0 14px; }
+.headline { font-size: clamp(3rem, 14.5vw, 4.4rem); line-height: 1; margin: 0 0 14px; }
 .sub { font-size: 1.3rem; line-height: 1.35; margin: 0 0 20px; color: var(--ink); max-width: 24em; }
 .upload .big.primary { min-height: 76px; font-size: 1.4rem; border-radius: 16px; }
 
