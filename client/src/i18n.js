@@ -9,7 +9,8 @@ export const LANGS = [
 
 export const T = {
   en: {
-    tagline: 'Got a letter from your landlord? Take a photo. We\'ll tell you what it means.',
+    headline: 'Got a letter from your landlord?',
+    sub: 'Take a photo. We\'ll tell you what it means.',
     takePhoto: 'Take a photo of the notice',
     choosePhoto: 'or choose a photo',
     samples: 'Try a sample notice',
@@ -81,7 +82,8 @@ export const T = {
     statsSource: 'Source: U.S. Census Bureau',
   },
   es: {
-    tagline: '¿Recibió una carta de su casero? Tome una foto. Le diremos qué significa.',
+    headline: '¿Recibió una carta de su casero?',
+    sub: 'Tome una foto. Le diremos qué significa.',
     takePhoto: 'Tome una foto del aviso',
     choosePhoto: 'o elija una foto',
     samples: 'Pruebe un aviso de ejemplo',
@@ -153,7 +155,8 @@ export const T = {
     statsSource: 'Fuente: Oficina del Censo de EE. UU.',
   },
   pt: {
-    tagline: 'Recebeu uma carta do senhorio? Tire uma foto. Diremos o que significa.',
+    headline: 'Recebeu uma carta do senhorio?',
+    sub: 'Tire uma foto. Diremos o que significa.',
     takePhoto: 'Tire uma foto do aviso',
     choosePhoto: 'ou escolha uma foto',
     samples: 'Teste um aviso de exemplo',
@@ -225,7 +228,8 @@ export const T = {
     statsSource: 'Fonte: Censo dos EUA',
   },
   ht: {
-    tagline: 'Ou resevwa yon lèt nan men mèt kay ou? Pran yon foto. N ap di w sa li vle di.',
+    headline: 'Ou resevwa yon lèt nan men mèt kay ou?',
+    sub: 'Pran yon foto. N ap di w sa li vle di.',
     takePhoto: 'Pran yon foto avi a',
     choosePhoto: 'oswa chwazi yon foto',
     samples: 'Eseye yon avi egzanp',

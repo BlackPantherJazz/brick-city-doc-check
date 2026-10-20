@@ -1,8 +1,10 @@
 /* ─────────────────────────────────────────────────────────────
    BRICK AND NEON
    Newark at night: oxblood brick, a neon shop sign, highlighter yellow.
-   - Bricolage Grotesque for big words; Atkinson Hyperlegible (made for
-     low-vision readers) for everything people need to read.
+   - Big Shoulders Display for big words: tall, condensed lettering in the
+     tradition of city signage. Atkinson Hyperlegible (made for low-vision
+     readers) for everything people need to read. The sign alone gets the
+     neon-tube faces (Neonderthaw script, Tilt Neon block).
    - Yellow = "do this" (actions, highlights). Neon pink = the sign.
      Red / amber / green = verdicts only, always with words, never color alone.
    - Every animation is skipped when the phone asks for reduced motion.
@@ -22,7 +24,7 @@
   --amber: #ffb020; --amber-text: #ffcc66;
   --green: #2fd47a; --green-text: #8af0b5;
   --radius: 16px;
-  --display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --display: 'Big Shoulders Display', 'Arial Narrow', system-ui, sans-serif;
   --body: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color-scheme: dark;
 }
@@ -57,25 +59,92 @@ a { color: var(--marker); }
 .app { max-width: 560px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; }
 @media (min-width: 600px) {
   body { padding: 24px 16px; }
-  .app { min-height: auto; border: 1px solid var(--line); border-radius: 24px; overflow: hidden;
-    background: rgba(28, 13, 12, .72); box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+  .app { min-height: auto; }
+  .top { border-radius: 18px; }
 }
 
-/* ── header: the neon sign ── */
+/* ── top bar: small sign + languages ── */
 .top {
   position: sticky; top: 0; z-index: 3;
-  background: rgba(28, 13, 12, .88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  background: rgba(20, 9, 8, .86); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
-  padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 10px;
+  padding: 10px 14px; display: flex; gap: 10px;
   align-items: center; justify-content: space-between;
 }
-.brand { background: none; border: 0; padding: 4px 0; text-align: left; white-space: nowrap;
-  font-family: var(--display); font-weight: 800; font-size: 1.25rem; line-height: 1.05; letter-spacing: -0.01em; }
-.neon { color: var(--neon-text);
-  text-shadow: 0 0 4px rgba(255,79,139,.95), 0 0 14px rgba(255,79,139,.7), 0 0 30px rgba(255,79,139,.35); }
-/* Sign-on: each word flickers on like a tube warming up (first visit of the session only). */
-.intro .neon { animation: neon-on 1.5s linear both; }
-.intro .neon.n2 { animation-delay: .45s; }
+/* home screen: no bar, just the language switch on the wall above the sign */
+.top.home { position: relative; background: none; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none;
+  justify-content: flex-end; padding-bottom: 0; }
+/* ── THE SIGN ─────────────────────────────────────────────────
+   A black acrylic board hanging on the wall, glass tubes inside.
+   --tube is a registered color property (@property), so the browser can
+   fade it smoothly from one neon color to the next. Every glow uses it,
+   including the colored light the sign throws onto the bricks.        */
+@property --tube { syntax: '<color>'; inherits: true; initial-value: #ff3ea5; }
+@keyframes tube-cycle {
+  0%, 100% { --tube: #ff3ea5; }   /* hot pink */
+  16%      { --tube: #b54dff; }   /* violet */
+  32%      { --tube: #3d8bff; }   /* blue */
+  48%      { --tube: #1fe4ff; }   /* ice */
+  64%      { --tube: #3dff8a; }   /* green */
+  80%      { --tube: #ffe14a; }   /* yellow */
+  90%      { --tube: #ff7a2f; }   /* orange */
+}
+.sign { display: block; position: relative; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: center; }
+.board {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  border-radius: 18px; background: #000;
+  /* glass reflection + the light spilling onto the bricks */
+  background-image: linear-gradient(155deg, rgba(255,255,255,.09), rgba(255,255,255,0) 38%);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.09), 0 18px 34px rgba(0,0,0,.65),
+    0 0 90px -4px color-mix(in srgb, var(--tube) 60%, transparent);
+  animation: tube-cycle 14s linear infinite;
+}
+.frame { position: absolute; inset: 8px; width: calc(100% - 16px); height: calc(100% - 16px); overflow: visible; }
+.frame rect { fill: none; stroke: color-mix(in srgb, var(--tube) 45%, white); stroke-width: 2.5; stroke-linecap: round;
+  stroke-dasharray: 2.2 1.4; animation: chase 2.6s linear infinite, tube-cycle 14s linear infinite;
+  animation-delay: 0s, -9s;
+  filter: drop-shadow(0 0 2px var(--tube)) drop-shadow(0 0 7px var(--tube)); }
+@keyframes chase { to { stroke-dashoffset: -3.6; } }
+.script, .block {
+  display: block; position: relative; animation: tube-cycle 14s linear infinite;
+  /* white-hot core of the tube, colored glow around it */
+  color: color-mix(in srgb, var(--tube) 40%, white);
+  text-shadow: 0 0 2px var(--tube), 0 0 7px var(--tube), 0 0 18px var(--tube), 0 0 40px color-mix(in srgb, var(--tube) 70%, transparent);
+}
+.script { font-family: 'Neonderthaw', cursive; font-weight: 400; line-height: .9; }
+.block  { font-family: 'Tilt Neon', var(--display); font-weight: 400; animation-delay: -4.6s; }
+.tired  { animation: tired 9s steps(1) infinite; }
+@keyframes tired {
+  0%, 86%, 89%, 92%, 100% { opacity: 1; }
+  87%, 90.5%              { opacity: .18; text-shadow: none; }
+}
+
+/* big: home screen, hanging from two chains */
+.sign-big { width: min(100%, 430px); margin: 0 auto 30px; padding-top: 38px; }
+.sign-big .board { padding: 24px 18px 26px; }
+.sign-big .script { font-size: clamp(2.9rem, 14vw, 4.1rem); margin: 4px 0 6px; white-space: nowrap; }
+.sign-big .block { font-size: clamp(1.5rem, 7.6vw, 2.2rem); letter-spacing: .2em; padding-left: .2em; }
+.chains { position: absolute; top: 0; left: 22%; right: 22%; height: 40px; }
+.chains::before, .chains::after { content: ''; position: absolute; top: 0; bottom: 0; width: 3px;
+  background: repeating-linear-gradient(to bottom, #9a8f88 0 5px, #3b302c 5px 6px, transparent 6px 8px); }
+.chains::before { left: 0; } .chains::after { right: 0; }
+/* the hooks the chains hang from */
+.sign-big::before, .sign-big::after { content: ''; position: absolute; top: -3px; width: 9px; height: 9px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #c9bdb4, #4a3f3a); }
+.sign-big::before { left: calc(22% - 3px); } .sign-big::after { right: calc(22% - 3px); }
+
+/* small: in the top bar on every other screen (tap = home) */
+.sign-small { cursor: pointer; }
+.sign-small .board { flex-direction: row; align-items: baseline; gap: 8px; padding: 6px 14px 7px; border-radius: 11px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.09), 0 0 30px -6px color-mix(in srgb, var(--tube) 60%, transparent); }
+.sign-small .frame { inset: 3px; width: calc(100% - 6px); height: calc(100% - 6px); }
+.sign-small .frame rect { stroke-width: 1.4; stroke-dasharray: none; animation: tube-cycle 14s linear infinite; animation-delay: -9s; }
+.sign-small .script { font-size: 1.9rem; }
+.sign-small .block { font-size: .8rem; letter-spacing: .16em; }
+
+/* first visit: the tubes stutter on, one after the other */
+.intro .script { animation: neon-on 1.5s linear both, tube-cycle 14s linear infinite; }
+.intro .block  { animation: neon-on 1.5s linear .45s both, tube-cycle 14s linear -4.6s infinite; }
 @keyframes neon-on {
   0%, 9%   { opacity: .12; text-shadow: none; }
   10%, 12% { opacity: 1; }
@@ -84,6 +153,7 @@ a { color: var(--marker); }
   26%, 34% { opacity: .35; text-shadow: none; }
   35%, 100% { opacity: 1; }
 }
+
 .langs { display: flex; gap: 6px; }
 .langs button {
   min-width: 48px; min-height: 44px; padding: 6px 12px; border-radius: 999px;
@@ -93,15 +163,16 @@ a { color: var(--marker); }
 
 main { flex: 1; padding: 22px 18px 32px; }
 
-h1 { font-family: var(--display); font-weight: 800; font-size: 2rem; line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 6px; }
-h2 { font-family: var(--display); font-weight: 800; font-size: 1.15rem; margin: 0 0 8px; }
+/* Type scale (condensed display face runs large; body stays 18px) */
+h1 { font-family: var(--display); font-weight: 900; font-size: 2.7rem; line-height: .95; letter-spacing: .005em; margin: 0 0 10px; text-wrap: balance; }
+h2 { font-family: var(--display); font-weight: 900; font-size: 1.5rem; line-height: 1.05; letter-spacing: .01em; margin: 0 0 8px; }
 
 /* ── buttons ── */
 .big {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   width: 100%; min-height: 60px; margin: 14px 0 6px; padding: 14px 18px;
   border-radius: 18px; border: 2px solid rgba(255,244,234,.45);
-  background: transparent; color: var(--ink); font-family: var(--display); font-weight: 800; font-size: 1.15rem;
+  background: transparent; color: var(--ink); font-family: var(--display); font-weight: 900; font-size: 1.45rem; letter-spacing: .02em;
   transition: transform .12s, box-shadow .2s, background-color .2s;
 }
 .big.primary { background: var(--marker); border-color: var(--marker); color: var(--on-marker);
@@ -121,12 +192,50 @@ h2 { font-family: var(--display); font-weight: 800; font-size: 1.15rem; margin: 
   animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── upload ── */
-.tagline { font-family: var(--display); font-weight: 800; font-size: 2.6rem; line-height: .98; letter-spacing: -0.025em; margin: 18px 0 22px; }
-.upload .big.primary { min-height: 84px; font-size: 1.35rem; }
-.samples { margin-top: 30px; }
-.samples p { color: var(--muted); margin: 0 0 8px; font-size: .95rem; }
-.samples .row button { font-size: .95rem; font-weight: 400; }
+/* ── home ── */
+.headline { font-size: clamp(3rem, 14.5vw, 4.4rem); line-height: .92; margin: 0 0 14px; }
+.sub { font-size: 1.3rem; line-height: 1.35; margin: 0 0 20px; color: var(--ink); max-width: 24em; }
+.upload .big.primary { min-height: 76px; font-size: 1.4rem; border-radius: 16px; }
+
+/* Sample notices: real paper, taped to the wall */
+.samples { margin-top: 34px; }
+.samples h2 { font-family: var(--body); font-size: 1rem; font-weight: 700; color: var(--muted); letter-spacing: 0; margin: 0 0 22px; }
+.taped { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.paper {
+  position: relative; display: block; padding: 6px 6px 9px; border: 0; border-radius: 2px;
+  background: #f6f1e7; color: #2a1513; text-align: left;
+  transform: rotate(var(--tilt)); transform-origin: 50% 0;
+  box-shadow: 0 12px 20px -6px rgba(0,0,0,.65), 0 2px 3px rgba(0,0,0,.35);
+  transition: transform .25s cubic-bezier(.3,.7,.3,1.3), box-shadow .25s;
+}
+.paper:hover, .paper:focus-visible { transform: rotate(0deg) translateY(-4px); box-shadow: 0 20px 28px -8px rgba(0,0,0,.7), 0 2px 3px rgba(0,0,0,.3); }
+.paper:active { transform: rotate(0deg) scale(.97); }
+.paper img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 12%; }
+.paper-label { display: block; margin-top: 7px; font-size: .9rem; font-weight: 700; line-height: 1.15; }
+.tape { position: absolute; top: -11px; left: 50%; width: 58px; height: 22px; z-index: 1;
+  transform: translateX(-50%) rotate(calc(var(--tilt) * -1.6));
+  background: rgba(238, 228, 196, .78); box-shadow: 0 1px 2px rgba(0,0,0,.25);
+  /* torn ends */
+  clip-path: polygon(0 8%, 4% 0, 9% 10%, 14% 2%, 86% 0, 91% 9%, 96% 1%, 100% 10%, 100% 92%, 95% 100%, 90% 90%, 85% 100%, 12% 100%, 7% 91%, 3% 100%, 0 90%); }
+
+/* "Built for Newark", painted on the bricks like an old ghost-sign ad */
+.ghost { margin-top: 48px; }
+.ghost h2, .ghost .n {
+  color: #efe3cc; opacity: .86;
+  /* worn paint: a noise mask knocks out flecks, like decades of weather */
+  -webkit-mask-image: var(--worn); mask-image: var(--worn); -webkit-mask-size: 220px; mask-size: 220px;
+}
+.ghost h2 { font-size: clamp(2.4rem, 11vw, 3.2rem); line-height: .95; margin: 0 0 14px; letter-spacing: .03em; }
+.ghost ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 16px; align-items: baseline; }
+.ghost li { display: contents; }
+.ghost .n { font-family: var(--display); font-weight: 900; font-size: 2.5rem; line-height: 1; text-align: right; letter-spacing: .01em; }
+.ghost .l { font-size: 1rem; line-height: 1.3; color: var(--muted); }
+.ghost .src { font-size: .8rem; margin: 14px 0 0; }
+.ghost .src a { color: var(--muted); text-underline-offset: 2px; }
+:root {
+  --worn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.4 2.15'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 
 /* ── loading (photo-less reading only) ── */
 .loading { text-align: center; padding: 60px 0; font-size: 1.2rem; }
@@ -164,14 +273,14 @@ fieldset.coverage .row { margin-top: 12px; }
 .verdict.yellow { --glow: rgba(255,176,32,.5);  --num: var(--amber); --txt: var(--amber-text); border-color: rgba(255,176,32,.6); }
 .verdict.green  { --glow: rgba(47,212,122,.45); --num: var(--green); --txt: var(--green-text); border-color: rgba(47,212,122,.55); }
 .verdict.none   { --num: var(--ink); --txt: var(--ink); }
-.big-num { margin: 4px 0 2px; padding: 0 50px; font-family: var(--display); font-weight: 800; font-size: clamp(3.6rem, 19vw, 5.6rem); line-height: .95; letter-spacing: -0.04em;
+.big-num { margin: 4px 0 2px; padding: 0 50px; font-family: var(--display); font-weight: 900; font-size: clamp(3.6rem, 19vw, 5.6rem); line-height: .95; letter-spacing: .005em;
   font-variant-numeric: tabular-nums; color: var(--num);
   text-shadow: 0 0 10px color-mix(in srgb, var(--num) 85%, transparent), 0 0 34px color-mix(in srgb, var(--num) 55%, transparent); }
 .lit { animation: neon-on 1s linear both; }
 .verdict .icon { display: inline-grid; place-items: center; width: 84px; height: 84px; border-radius: 50%;
-  font-family: var(--display); font-size: 3rem; font-weight: 800; color: var(--night); background: var(--num, var(--ink));
+  font-family: var(--display); font-size: 3rem; font-weight: 900; color: var(--night); background: var(--num, var(--ink));
   box-shadow: 0 0 24px color-mix(in srgb, var(--num, #fff) 70%, transparent); margin: 6px 0 10px; }
-.verdict .line { font-family: var(--display); font-size: 1.6rem; font-weight: 800; margin: 8px 0 0; line-height: 1.12; color: var(--ink); }
+.verdict .line { font-family: var(--display); font-size: 1.6rem; font-weight: 900; margin: 8px 0 0; line-height: 1.12; color: var(--ink); }
 .verdict .pct { margin: 2px 0 0; color: var(--txt); font-weight: 700; }
 .result-thumb { position: absolute; top: 12px; right: 12px; width: 44px; height: 55px; object-fit: cover; border-radius: 8px;
   border: 2px solid rgba(255,244,234,.5); box-shadow: 0 6px 16px rgba(0,0,0,.4); }
@@ -207,7 +316,7 @@ fieldset.coverage .row { margin-top: 12px; }
 .help .org:first-of-type { border-top: 0; }
 .help .name { margin: 0 0 8px; font-weight: 700; }
 .call { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 58px; border-radius: 14px;
-  background: var(--red); color: #fff; font-family: var(--display); font-weight: 800; text-decoration: none;
+  background: var(--red); color: #fff; font-family: var(--display); font-weight: 900; text-decoration: none;
   box-shadow: 0 0 0 4px rgba(255,59,92,.18), 0 8px 24px rgba(255,59,92,.3); }
 
 .why { margin: 12px 0; background: var(--night-2); border-radius: 14px; padding: 4px 16px; border: 1px solid var(--line); }
@@ -223,7 +332,7 @@ fieldset.coverage .row { margin-top: 12px; }
 .letter { margin: 18px 0; }
 .letter textarea { font-family: ui-monospace, Menlo, monospace; font-size: .85rem; line-height: 1.45; resize: vertical; background: #fff8ef; color: #2a1513; }
 .letter button { margin-top: 8px; width: 100%; min-height: 54px; border-radius: 14px; border: 0;
-  background: var(--marker); color: var(--on-marker); font-family: var(--display); font-weight: 800; }
+  background: var(--marker); color: var(--on-marker); font-family: var(--display); font-weight: 900; }
 
 .disclaimer { color: var(--muted); font-size: .9rem; text-align: center; margin: 18px 0 0; }
 
@@ -233,16 +342,6 @@ fieldset.coverage .row { margin-top: 12px; }
 .not-advice { font-size: .8rem; line-height: 1.45; max-width: 34em; margin: 6px auto 0 !important; }
 .dev { color: var(--amber-text); font-size: .8rem; font-weight: 700; margin: 4px 0; }
 .note { color: var(--muted); font-size: .85rem; font-style: italic; margin: 4px 0; }
-
-/* ── "Built for Newark" stats ── */
-.stats { margin-top: 30px; padding-top: 18px; border-top: 1px dashed var(--line); }
-.stats h2 { font-size: 1rem; color: var(--muted); margin: 0 0 10px; }
-.stat-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.stat { background: var(--night-2); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
-.stat .n { display: block; font-family: var(--display); font-size: 1.6rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; line-height: 1.1; }
-.stat .l { display: block; font-size: .88rem; line-height: 1.35; color: var(--muted); margin-top: 4px; }
-.stats .src { font-size: .78rem; margin: 8px 0 0; }
-.stats .src a { color: var(--muted); text-underline-offset: 2px; }
 
 /* ── The notice photo with highlighter strokes ──
    Strokes are placed in % of .photo-frame (exactly the image) and blended
@@ -276,7 +375,7 @@ fieldset.coverage .row { margin-top: 12px; }
   animation: scan 1.6s cubic-bezier(.45,0,.55,1) infinite; }
 @keyframes scan { to { top: 100%; } }
 .reading { padding-top: 4px; }
-.reading-caption { text-align: center; font-family: var(--display); font-weight: 800; font-size: 1.3rem; margin: 6px 0 0; }
+.reading-caption { text-align: center; font-family: var(--display); font-weight: 900; font-size: 1.3rem; margin: 6px 0 0; }
 
 /* Swatch beside a form label = "this came from the highlighted spot" */
 .lbl { display: flex; align-items: center; gap: 8px; }
@@ -289,11 +388,10 @@ fieldset.coverage .row { margin-top: 12px; }
 
 /* ── small phones ── */
 @media (max-width: 480px) {
-  .top { flex-direction: column; align-items: stretch; gap: 8px; }
-  .langs { width: 100%; }
-  .langs button { flex: 1 1 0; min-width: 0; }
-  .samples .row button { font-size: .85rem; padding: 10px 4px; }
-  .tagline { font-size: 2.3rem; }
+  .langs button { min-width: 44px; padding: 6px 9px; }
+  .sign-small .board { flex-direction: column; align-items: center; gap: 0; padding: 4px 12px 7px; }
+  .sign-small .script { font-size: 1.55rem; }
+  .sign-small .block { font-size: .62rem; }
 }
 @media (max-width: 360px) {
   .two { grid-template-columns: 1fr; }
@@ -302,7 +400,11 @@ fieldset.coverage .row { margin-top: 12px; }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro .neon, .lit { animation: none; }
+  .lit { animation: none; }
+  /* the sign holds still: pink script, ice-blue block, yellow border */
+  .board, .script, .block, .frame rect, .tired, .intro .script, .intro .block { animation: none !important; }
+  .script { --tube: #ff3ea5; } .block { --tube: #1fe4ff; } .frame rect, .board { --tube: #ffe14a; }
+  .paper { transition: none; }
   .hl::before { animation: none; clip-path: none; }
   .scanline { animation: none; top: 41%; }
   .btn-spin, .spinner { animation-duration: 2s; }

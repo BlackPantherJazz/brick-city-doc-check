@@ -18,6 +18,7 @@ import Upload from './screens/Upload.jsx';
 import Confirm from './screens/Confirm.jsx';
 import Result from './screens/Result.jsx';
 import NoticePhoto from './components/NoticePhoto.jsx';
+import NeonSign from './components/NeonSign.jsx';
 
 // Let the scan animation play for at least this long, even when the answer is instant.
 const MIN_SCAN_MS = 1400;
@@ -174,10 +175,9 @@ export default function App() {
 
   return (
     <div className={`app ${intro ? 'intro' : ''}`}>
-      <header className="top">
-        <button className="brand" onClick={startOver} aria-label="Brick City Doc Check, home">
-          <span className="neon n1">Brick City</span> <span className="neon n2">Doc Check</span>
-        </button>
+      <header className={`top ${step === 'upload' ? 'home' : ''}`}>
+        {/* On the home screen the big sign hangs below; elsewhere a small one sits up here. */}
+        {step !== 'upload' && <NeonSign size="small" onClick={startOver} label="Brick City Doc Check, home" />}
         <nav className="langs" aria-label="Language">
           {LANGS.map((l) => (
             <button
@@ -202,6 +202,7 @@ export default function App() {
           </p>
         )}
 
+        {step === 'upload' && <NeonSign size="big" label="Brick City Doc Check" />}
         {step === 'upload' && <Upload t={t} onPhoto={handlePhoto} onSample={handleSample} />}
 
         {step === 'reading' && photoUrl && (
